@@ -1,0 +1,20 @@
+# HARNESS.yaml
+
+project: "Harness Engineering"
+description: "Harness Engineering project"
+
+memory_stores:
+  technical:
+    path: technical/
+    registry: technical/_registry.yaml
+    description: "Hiểu biết kỹ thuật: ngôn ngữ, framework, patterns"
+
+  domain:
+    path: domain/
+    registry: domain/_registry.yaml
+    description: "Hiểu biết nghiệp vụ: workflow, business rules, thuật ngữ"
+
+  rules:
+    path: rules/
+    registry: rules/_registry.yaml
+    description: "Ràng buộc dự án: coding standards, security, API conventions"
