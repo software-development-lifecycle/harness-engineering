@@ -6,6 +6,10 @@
 
 Ý tưởng cốt lõi: AI Model giống như một lập trình viên cực giỏi nhưng mất trí nhớ mỗi phiên làm việc. Methodology này cung cấp một hệ thống có cấu trúc để tổ chức, duy trì và nạp lại đúng "trí nhớ" cần thiết — giúp AI hoạt động nhất quán, chính xác và tuân thủ các ràng buộc dự án qua mọi phiên làm việc.
 
+### Memory Architecture
+
+![Memory Architecture](guideline/images/architecture.png)
+
 ### Harness Engineering bao gồm:
 
 - **Memory Architecture** — Hệ thống lưu trữ knowledge bên ngoài, được tổ chức thành 3 stores: Technical, Domain, và Rules
