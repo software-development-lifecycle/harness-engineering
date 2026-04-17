@@ -10,6 +10,13 @@ last_updated: YYYY-MM-DD
 
 <!-- One-line summary: what business concept or workflow this covers -->
 
+## Glossary
+
+<!-- Key terms related to this concept.
+     Format: **Term** — definition
+     Place this first so readers understand domain vocabulary before reading further.
+     Remove this section if terms are already in a shared glossary. -->
+
 ## Definition
 
 <!-- What this concept is, in 1-2 sentences.
@@ -26,9 +33,3 @@ last_updated: YYYY-MM-DD
 <!-- Domain-specific logic and conditions.
      These are business truths, not coding constraints.
      Example: "Refund is only allowed within 30 days of purchase" -->
-
-## Glossary
-
-<!-- Key terms related to this concept.
-     Format: **Term** — definition
-     Remove this section if terms are already in a shared glossary. -->

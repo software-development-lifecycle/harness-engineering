@@ -10,6 +10,15 @@ last_updated: 2026-04-17
 
 An order represents a customer's purchase request, tracked from creation through fulfillment to completion or cancellation.
 
+## Glossary
+
+- **Line item** — a single product entry within an order, consisting of SKU, quantity, and unit price
+- **SKU** (Stock Keeping Unit) — unique identifier for a specific product variant (e.g., "Blue T-Shirt, Size M")
+- **Fulfillment** — the process of picking, packing, and shipping an order from the warehouse
+- **Backorder** — an order accepted for an out-of-stock item, to be fulfilled when stock arrives
+- **Chargeback** — a payment reversal initiated by the customer's bank (not the merchant)
+- **Soft lock** — temporary stock reservation that expires if not confirmed within a time window
+
 ## Definition
 
 An **Order** is created when a customer confirms their shopping cart for checkout. It progresses through payment, fulfillment, and delivery stages. Each order contains one or more **line items**, each referencing a product SKU and quantity.
@@ -60,12 +69,3 @@ Created → Confirmed → Paid → Shipped → Delivered → Closed
 - Customer can cancel freely while in Confirmed state
 - Once Paid, cancellation triggers a full refund (processed within 3 business days)
 - Cannot cancel once Shipped — must use return process
-
-## Glossary
-
-- **Line item** — a single product entry within an order, consisting of SKU, quantity, and unit price
-- **SKU** (Stock Keeping Unit) — unique identifier for a specific product variant (e.g., "Blue T-Shirt, Size M")
-- **Fulfillment** — the process of picking, packing, and shipping an order from the warehouse
-- **Backorder** — an order accepted for an out-of-stock item, to be fulfilled when stock arrives
-- **Chargeback** — a payment reversal initiated by the customer's bank (not the merchant)
-- **Soft lock** — temporary stock reservation that expires if not confirmed within a time window
