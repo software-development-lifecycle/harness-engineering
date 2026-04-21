@@ -7,14 +7,14 @@ memory_stores:
   technical:
     path: technical/
     registry: technical/_registry.yaml
-    description: "Hiểu biết kỹ thuật: ngôn ngữ, framework, patterns"
+    description: "Technical knowledge: languages, frameworks, patterns"
 
   domain:
     path: domain/
     registry: domain/_registry.yaml
-    description: "Hiểu biết nghiệp vụ: workflow, business rules, thuật ngữ"
+    description: "Domain knowledge: workflows, business rules, terminology"
 
   rules:
     path: rules/
     registry: rules/_registry.yaml
-    description: "Ràng buộc dự án: coding standards, security, API conventions"
+    description: "Project constraints: coding standards, security, API conventions"

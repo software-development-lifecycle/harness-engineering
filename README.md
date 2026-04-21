@@ -2,43 +2,43 @@
 
 ## Overview
 
-**Harness Engineering** là một methodology hướng dẫn cách sử dụng AI hiệu quả trong quy trình phát triển phần mềm, được xây dựng dựa trên **Harness Principles**.
+**Harness Engineering** is a methodology for using AI effectively in software development workflows, built on **Harness Principles**.
 
-Ý tưởng cốt lõi: AI Model giống như một lập trình viên cực giỏi nhưng mất trí nhớ mỗi phiên làm việc. Methodology này cung cấp một hệ thống có cấu trúc để tổ chức, duy trì và nạp lại đúng "trí nhớ" cần thiết — giúp AI hoạt động nhất quán, chính xác và tuân thủ các ràng buộc dự án qua mọi phiên làm việc.
+The core idea: an AI Model is like an exceptionally skilled developer who loses all memory at the end of every session. This methodology provides a structured system for organizing, maintaining, and reloading exactly the right "memory" — so the AI behaves consistently, accurately, and in compliance with project constraints across every working session.
 
 ### Memory Architecture
 
 ![Memory Architecture](guideline/images/architecture.png)
 
-### Harness Engineering bao gồm:
+### Harness Engineering includes:
 
-- **Memory Architecture** — Hệ thống lưu trữ knowledge bên ngoài, được tổ chức thành 3 stores: Technical, Domain, và Rules
-- **Registry-based Retrieval** — Cơ chế truy xuất memory thông minh qua registry, chỉ load đúng những gì cần thiết
-- **SOLID Principles for Memory** — Áp dụng các nguyên tắc SOLID vào việc tổ chức và quản lý memory
-- **Guidelines** — Bộ tài liệu hướng dẫn chi tiết cách thực hành methodology
+- **Memory Architecture** — An external knowledge storage system organized into 3 stores: Technical, Domain, and Rules
+- **Registry-based Retrieval** — A smart memory retrieval mechanism via registry, loading only what is needed
+- **SOLID Principles for Memory** — Applying SOLID principles to the organization and management of memory
+- **Guidelines** — A comprehensive set of documents detailing how to practice the methodology
 
 ## Pre-requisites
 
-Trước khi bắt đầu làm việc với project này, hãy đọc kỹ các guideline sau:
+Before starting to work with this project, please read the following guidelines carefully:
 
-| Guideline | Mô tả |
+| Guideline | Description |
 |---|---|
-| [Memory Management Best Practices](guideline/memory-management-best-practices.md) | Hướng dẫn toàn diện về cách tổ chức, viết, và bảo trì memory system — bao gồm cấu trúc stores, registry, quy tắc viết memory files, và quy trình thêm/sửa/xóa |
+| [Memory Management Best Practices](guideline/memory-management-best-practices.md) | A comprehensive guide on how to organize, write, and maintain the memory system — covering store structure, registry, rules for writing memory files, and procedures for adding, updating, and removing entries |
 
 ## Project Structure
 
 ```
 harness-engineering/
 ├── README.md
-├── guideline/                # Tài liệu hướng dẫn methodology
+├── guideline/                # Methodology documentation
 │   └── memory-management-best-practices.md
-└── memory/                   # Memory system của dự án
-    ├── HARNESS.yaml          # File gốc, mô tả tổng quan memory system
-    ├── technical/            # Hiểu biết kỹ thuật: ngôn ngữ, framework, patterns
+└── memory/                   # Project memory system
+    ├── HARNESS.yaml          # Root file describing the memory system overview
+    ├── technical/            # Technical knowledge: languages, frameworks, patterns
     │   └── _registry.yaml
-    ├── domain/               # Hiểu biết nghiệp vụ: workflow, business rules, thuật ngữ
+    ├── domain/               # Business knowledge: workflows, business rules, terminology
     │   └── _registry.yaml
-    └── rules/                # Ràng buộc dự án: coding standards, security, API conventions
+    └── rules/                # Project constraints: coding standards, security, API conventions
         └── _registry.yaml
 ```
 

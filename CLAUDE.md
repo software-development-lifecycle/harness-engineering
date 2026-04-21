@@ -22,7 +22,7 @@ This repo contains the methodology documentation, guidelines, templates, and a r
 
 ## Working Conventions
 
-- **Documentation language:** Vietnamese for guideline prose, English for code examples and YAML frontmatter
+- **Documentation language:** English for all content
 - **Branch strategy:** `develop` for active work, `main` for stable releases
 - **Commit style:** conventional commits (`feat:`, `fix:`, `docs:`)
 - **Memory file format:** YAML frontmatter metadata header (see `guideline/templates/` for format)

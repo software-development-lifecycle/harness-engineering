@@ -1,135 +1,135 @@
 # Memory Management Best Practices
 
-## 1. Triết lý nền tảng
+## 1. Core Philosophy
 
-AI Model giống như một lập trình viên cực giỏi nhưng mất trí nhớ mỗi phiên làm việc. Mỗi lần invoke, bộ não này bắt đầu từ trắng. Memory là hệ thống lưu trữ bên ngoài — được tổ chức, duy trì bởi con người — để nạp lại đúng "trí nhớ" cần thiết cho mỗi phiên làm việc.
+An AI Model is like an exceptionally skilled developer who loses all memory between sessions. Each time it is invoked, that brain starts from a blank slate. Memory is an external storage system — organized and maintained by humans — that reloads the right "memories" for each working session.
 
-Một lập trình viên giỏi cần: biết kỹ thuật (technical knowledge), hiểu nghiệp vụ (domain knowledge), nắm luật chơi dự án (rules), và hiểu việc mình đang làm (context). Memory architecture phản ánh đúng 4 loại hiểu biết này.
+A skilled developer needs: technical knowledge, domain knowledge, project rules (constraints), and an understanding of the current task (context). The memory architecture maps directly to these four types of understanding.
 
 ---
 
-## 2. Nguyên tắc SOLID áp dụng cho Memory
+## 2. SOLID Principles Applied to Memory
 
 ### 2.1. S — Single Responsibility
 
-> Mỗi đơn vị memory chỉ chứa một chủ đề, chỉ có một lý do để thay đổi.
+> Each memory unit covers only one topic and has only one reason to change.
 
-**Áp dụng ở 2 cấp:**
+**Applied at two levels:**
 
-Cấp store: mỗi memory store chỉ chứa một loại hiểu biết. Technical store thay đổi khi tech stack đổi. Domain store thay đổi khi nghiệp vụ đổi. Rules store thay đổi khi constraint đổi. Ba store độc lập, không trộn lẫn.
+Store level: each memory store contains only one type of understanding. The technical store changes when the tech stack changes. The domain store changes when the business domain changes. The rules store changes when constraints change. The three stores are independent and must not be mixed.
 
-Cấp file: mỗi file chỉ nói về một chủ đề cụ thể. File về async/await không trộn lẫn với EF Core. File về payment workflow không trộn lẫn với order lifecycle.
+File level: each file covers only one specific topic. A file about async/await must not be mixed with EF Core. A file about payment workflow must not be mixed with order lifecycle.
 
-**Kiểm tra:** nếu phải giải thích nội dung file bằng "A và B" thì nên tách thành 2 files.
+**Check:** if you need to describe a file's contents using "A and B," it should be split into two files.
 
-**Sai:**
+**Wrong:**
 ```
-csharp-everything.md          → Chứa async, LINQ, generics, DI — quá nhiều chủ đề
-payment-and-order.md          → 2 domain khác nhau trong 1 file
-coding-and-security-rules.md  → 2 loại constraint khác nhau
+csharp-everything.md          → Contains async, LINQ, generics, DI — too many topics
+payment-and-order.md          → 2 different domains in 1 file
+coding-and-security-rules.md  → 2 different types of constraints
 ```
 
-**Đúng:**
+**Correct:**
 ```
-csharp-async.md               → Chỉ async/await
-csharp-linq.md                → Chỉ LINQ
-payment-workflow.md           → Chỉ payment
-coding-standards.md           → Chỉ coding conventions
-security.md                   → Chỉ security rules
+csharp-async.md               → async/await only
+csharp-linq.md                → LINQ only
+payment-workflow.md           → payment only
+coding-standards.md           → coding conventions only
+security.md                   → security rules only
 ```
 
 ### 2.2. O — Open/Closed
 
-> Memory mở cho việc thêm mới, đóng cho việc sửa cấu trúc.
+> Memory is open for extension, closed for structural modification.
 
-Thêm knowledge mới = tạo file mới + thêm entry vào registry. Không sửa file nào khác, không sửa cấu trúc store.
+Adding new knowledge = create a new file + add an entry to the registry. No other files are modified; the store structure remains untouched.
 
-**Ví dụ:** team bắt đầu dùng gRPC trong dự án.
+**Example:** the team starts using gRPC in a project.
 
-Thêm mới:
+Add new:
 ```
-1. Tạo file: technical/framework/grpc-patterns.md
-2. Thêm entry vào technical/_registry.yaml
-3. Xong.
+1. Create file: technical/framework/grpc-patterns.md
+2. Add entry to technical/_registry.yaml
+3. Done.
 ```
 
-Không cần sửa: các file technical khác, domain registry, rules registry, hay bất kỳ thứ gì đang có.
+No need to modify: any other technical files, the domain registry, the rules registry, or anything else that already exists.
 
-**Kiểm tra:** khi thêm 1 đơn vị knowledge mới, nếu phải sửa bất kỳ file nào ngoài registry → đang vi phạm O.
+**Check:** when adding one new unit of knowledge, if you find yourself modifying any file other than the registry — you are violating O.
 
 ### 2.3. I — Interface Segregation
 
-> Không bắt ai phải nhận memory mà họ không cần.
+> Do not force anyone to receive memory they do not need.
 
-Khi truy xuất memory, chỉ load đúng những files cần thiết cho công việc hiện tại. Không dump toàn bộ store.
+When retrieving memory, load only the files necessary for the current task. Never dump the entire store.
 
-Cơ chế thực hiện: registry đóng vai trò index — đọc registry trước để xác định files nào cần, chỉ load những files đó. Không bao giờ load toàn bộ store.
+How it works: the registry acts as an index — read the registry first to identify which files are needed, then load only those files. Never load the entire store.
 
-**Sai:** load tất cả 15 files technical vào context dù chỉ cần 3 files liên quan.
+**Wrong:** load all 15 technical files into context even though only 3 are relevant.
 
-**Đúng:** đọc registry → xác định 3 files cần thiết → chỉ load 3 files đó.
+**Correct:** read registry → identify the 3 necessary files → load only those 3 files.
 
 ### 2.4. D — Dependency Inversion
 
-> Phụ thuộc vào loại memory, không phụ thuộc file cụ thể.
+> Depend on the type of memory, not on a specific file.
 
-Bất kỳ thứ gì cần truy xuất memory đều làm việc thông qua registry, không trỏ thẳng vào file path cố định. Nếu file được di chuyển, đổi tên, hoặc tách nhỏ → chỉ cần cập nhật registry, không cần sửa bất kỳ thứ gì khác.
+Anything that needs to retrieve memory works through the registry — it never points directly to a hardcoded file path. If a file is moved, renamed, or split → only the registry needs to be updated; nothing else changes.
 
-Registry là lớp trung gian duy nhất giữa "người cần memory" và "file chứa memory".
+The registry is the only intermediary layer between "the consumer of memory" and "the file containing memory."
 
 ---
 
-## 3. Cấu trúc Memory
+## 3. Memory Structure
 
-### 3.1. Ba memory stores
+### 3.1. Three memory stores
 
 ```
 memory/
-├── technical/            # Hiểu biết kỹ thuật
+├── technical/            # Technical knowledge
 │   ├── _registry.yaml
 │   └── [files...]
 │
-├── domain/               # Hiểu biết nghiệp vụ
+├── domain/               # Domain knowledge
 │   ├── _registry.yaml
 │   └── [files...]
 │
-├── rules/                # Ràng buộc dự án
+├── rules/                # Project constraints
 │   ├── _registry.yaml
 │   └── [files...]
 │
-└── HARNESS.yaml          # File gốc, mô tả tổng quan
+└── HARNESS.yaml          # Root file describing the overall system
 ```
 
-Mỗi store hoàn toàn độc lập. Thêm, sửa, xóa trong một store không ảnh hưởng store khác.
+Each store is completely independent. Adding, modifying, or removing items in one store does not affect any other store.
 
-**Context** (loại memory thứ 4) không lưu trữ trong hệ thống — do con người cung cấp mỗi lần invoke skill, mô tả công việc cần thực hiện ở thời điểm hiện tại.
+**Context** (the fourth type of memory) is not stored in the system — it is provided by humans each time a skill is invoked, describing the work to be done at that moment.
 
-### 3.2. Phân biệt 3 stores
+### 3.2. Distinguishing the three stores
 
 | | Technical | Domain | Rules |
 |---|---|---|---|
-| **Chứa gì** | Cách làm (how) | Làm về cái gì (what) | Ràng buộc khi làm (constraint) |
-| **Ví dụ** | Async patterns, EF Core, Redis caching | Payment workflow, order lifecycle, thuật ngữ nghiệp vụ | Coding standards, security requirements, API conventions |
-| **Thay đổi khi** | Tech stack thay đổi | Nghiệp vụ thay đổi | Constraint dự án thay đổi |
-| **Ai viết** | Tech lead, senior dev | BA, domain expert, tech lead | Tech lead, client |
-| **Tần suất thay đổi** | Thấp | Trung bình | Thấp |
+| **Contains** | How to do it (how) | What it is about (what) | Constraints on doing it (constraint) |
+| **Examples** | Async patterns, EF Core, Redis caching | Payment workflow, order lifecycle, business terminology | Coding standards, security requirements, API conventions |
+| **Changes when** | Tech stack changes | Business domain changes | Project constraints change |
+| **Written by** | Tech lead, senior dev | BA, domain expert, tech lead | Tech lead, client |
+| **Change frequency** | Low | Medium | Low |
 
-### 3.3. Thư mục bên dưới store
+### 3.3. Subdirectories within a store
 
-Cấu trúc thư mục bên trong mỗi store là **tùy biến** — team tự tổ chức theo cách hợp lý nhất cho dự án. Methodology không bắt buộc bao nhiêu cấp hay đặt tên thế nào.
+The directory structure inside each store is **flexible** — the team organizes it in whatever way makes the most sense for the project. The methodology does not mandate a number of nesting levels or a naming scheme.
 
-Lý do: registry là nguồn truy xuất duy nhất. Thư mục chỉ phục vụ con người quản lý files. Miễn path trong registry trỏ đúng file là đủ.
+The reason: the registry is the sole access point. Directories only serve humans who manage the files. As long as paths in the registry point to the correct files, the structure is sufficient.
 
-Khuyến nghị chung:
-- Nhóm files liên quan vào cùng thư mục để dễ tìm cho con người
-- Đặt tên thư mục và file rõ nghĩa, dùng kebab-case
-- Tránh lồng quá sâu (3-4 cấp là đủ cho hầu hết dự án)
+General recommendations:
+- Group related files into the same directory for ease of human navigation
+- Use clear, descriptive names for directories and files; use kebab-case
+- Avoid deep nesting (3–4 levels is enough for most projects)
 
 ---
 
-## 4. Registry — Quy tắc bắt buộc
+## 4. Registry — Mandatory Rules
 
-### 4.1. Mỗi store có đúng 1 registry file
+### 4.1. Each store has exactly one registry file
 
 ```
 technical/_registry.yaml
@@ -137,9 +137,9 @@ domain/_registry.yaml
 rules/_registry.yaml
 ```
 
-Registry là **mục lục** của store — đọc registry là biết store có gì, nằm ở đâu, chứa nội dung gì.
+The registry is the **table of contents** for the store — reading the registry tells you what the store contains, where it lives, and what each file is about.
 
-### 4.2. Format chuẩn
+### 4.2. Standard format
 
 ```yaml
 # [store]/_registry.yaml
@@ -147,17 +147,17 @@ Registry là **mục lục** của store — đọc registry là biết store c�
 [category]:
   - id: [unique-id]
     path: [relative-path-to-file]
-    desc: "[mô tả ngắn nội dung file]"
+    desc: "[short description of the file's content]"
 ```
 
-Mỗi entry có đúng 3 trường:
-- **id** — định danh duy nhất trong store, dùng để tham chiếu
-- **path** — đường dẫn tương đối đến file, tính từ thư mục store
-- **desc** — mô tả ngắn gọn nội dung bên trong, đủ để quyết định có cần load file hay không mà không cần mở file
+Each entry has exactly 3 fields:
+- **id** — a unique identifier within the store, used for cross-referencing
+- **path** — the relative path to the file, measured from the store directory
+- **desc** — a concise description of the file's content, sufficient to decide whether the file needs to be loaded without opening it
 
-Không thêm trường nào khác. Mọi thông tin chi tiết nằm trong file memory, không nằm trong registry.
+Do not add any other fields. All detailed information belongs inside the memory file, not in the registry.
 
-### 4.3. Ví dụ hoàn chỉnh
+### 4.3. Complete example
 
 ```yaml
 # technical/_registry.yaml
@@ -192,7 +192,7 @@ database:
 patterns:
   - id: repository-pattern
     path: patterns/repository-pattern.md
-    desc: "Repository pattern implementation với EF Core"
+    desc: "Repository pattern implementation with EF Core"
 
   - id: cqrs
     path: patterns/cqrs.md
@@ -205,29 +205,29 @@ patterns:
 payment:
   - id: payment-workflow
     path: payment/payment-workflow.md
-    desc: "Quy trình thanh toán, trạng thái, luồng xử lý"
+    desc: "Payment process, states, processing flow"
 
   - id: settlement-rules
     path: payment/settlement-rules.md
-    desc: "Quy tắc đối soát T+1, tính commission"
+    desc: "T+1 reconciliation rules, commission calculation"
 
   - id: refund-process
     path: payment/refund-process.md
-    desc: "Quy trình hoàn tiền, phân biệt refund vs chargeback"
+    desc: "Refund process, distinguishing refund vs chargeback"
 
 order:
   - id: order-lifecycle
     path: order/order-lifecycle.md
-    desc: "Vòng đời đơn hàng, state transitions"
+    desc: "Order lifecycle, state transitions"
 
   - id: order-statuses
     path: order/order-statuses.md
-    desc: "Danh sách trạng thái, điều kiện chuyển trạng thái"
+    desc: "List of statuses, transition conditions"
 
 general:
   - id: glossary
     path: glossary.md
-    desc: "Bảng thuật ngữ nghiệp vụ chung toàn dự án"
+    desc: "Project-wide business terminology glossary"
 ```
 
 ```yaml
@@ -258,46 +258,46 @@ testing:
     desc: "Unit test conventions, naming, coverage requirements"
 ```
 
-### 4.4. Nguyên tắc quản lý registry
+### 4.4. Registry management principles
 
-**ID phải unique trong store.** Không có 2 entries cùng id trong 1 registry. Giữa các stores thì id có thể trùng (technical có `security`, rules cũng có `security` — khác store, không conflict).
+**IDs must be unique within a store.** No two entries in the same registry may share an id. IDs may coincide across stores (technical may have `security`, rules may also have `security` — different stores, no conflict).
 
-**Mỗi file trong store phải có entry trong registry.** Nếu file tồn tại mà không có trong registry thì coi như file đó không tồn tại — sẽ không bao giờ được truy xuất.
+**Every file in the store must have an entry in the registry.** If a file exists but has no registry entry, it is treated as non-existent — it will never be retrieved.
 
-**Registry phải luôn đồng bộ với thực tế.** Thêm file → thêm entry. Xóa file → xóa entry. Di chuyển file → cập nhật path. Đây là quy tắc kỷ luật quan trọng nhất.
+**The registry must always be in sync with reality.** Add a file → add an entry. Delete a file → delete the entry. Move a file → update the path. This is the most important discipline rule.
 
-**desc phải đủ tốt để quyết định mà không cần mở file.** Nếu đọc desc mà vẫn không biết file có chứa thứ mình cần hay không → desc viết chưa đủ rõ.
+**desc must be good enough to make a decision without opening the file.** If reading the desc still leaves you unsure whether the file contains what you need → the desc is not written clearly enough.
 
 ---
 
-## 5. Memory Files — Quy tắc viết
+## 5. Memory Files — Writing Rules
 
-### 5.1. Viết cho AI đọc, không phải cho người đọc
+### 5.1. Write for AI to read, not for humans to read
 
-Memory files sẽ được nạp vào context window của AI model. Cách viết phải tối ưu cho AI hiểu và tuân thủ.
+Memory files are loaded into the context window of an AI model. Writing must be optimized for the AI to understand and follow.
 
-**Cụ thể, không mơ hồ:**
+**Be specific, not vague:**
 ```
-Sai:  "Nên follow team conventions khi đặt tên"
-Đúng: "Class names: PascalCase. Method names: camelCase. Constants: UPPER_SNAKE_CASE"
-```
-
-**Dùng từ mạnh, rõ ràng:**
-```
-Sai:  "Có thể dùng async khi cần"
-Đúng: "PHẢI dùng async cho mọi I/O operations. KHÔNG ĐƯỢC dùng .Result hoặc .Wait()"
+Wrong:  "Follow team conventions when naming things"
+Correct: "Class names: PascalCase. Method names: camelCase. Constants: UPPER_SNAKE_CASE"
 ```
 
-**Cho ví dụ DO/DON'T:**
+**Use strong, unambiguous language:**
+```
+Wrong:  "You can use async when needed"
+Correct: "MUST use async for all I/O operations. MUST NOT use .Result or .Wait()"
+```
 
-AI học từ ví dụ tốt hơn học từ mô tả. Mỗi rule quan trọng nên có ít nhất 1 ví dụ đúng và 1 ví dụ sai.
+**Provide DO/DON'T examples:**
+
+AI learns better from examples than from descriptions. Each important rule should have at least one correct example and one wrong example.
 
 ```markdown
 ## Repository Pattern
 
-PHẢI dùng repository interface cho data access.
+MUST use the repository interface for data access.
 
-✅ Đúng:
+✅ Correct:
 ```csharp
 public class OrderService
 {
@@ -306,289 +306,289 @@ public class OrderService
 }
 ```
 
-❌ Sai:
+❌ Wrong:
 ```csharp
 public class OrderService
 {
-    private readonly AppDbContext _context;  // Truy cập DB trực tiếp, không qua repository
+    private readonly AppDbContext _context;  // Direct DB access, bypassing repository
 }
 ```
 ```
 
-### 5.2. Một file, một chủ đề
+### 5.2. One file, one topic
 
-Mỗi file tập trung vào một chủ đề duy nhất (nguyên tắc S). Nếu file bắt đầu cover nhiều chủ đề không liên quan → tách ra.
+Each file focuses on a single topic (the S principle). If a file starts covering multiple unrelated topics → split it.
 
-Dấu hiệu cần tách:
-- File có nhiều hơn 2 heading cấp 2 (##) mà các heading không liên quan chặt chẽ
-- Cần giải thích bằng "file này nói về A **và** B"
-- Hai phần trong file thay đổi vì lý do khác nhau, ở thời điểm khác nhau
+Signs that a file should be split:
+- The file has more than 2 level-2 headings (##) and those headings are not closely related
+- You need to describe it as "this file is about A **and** B"
+- Two sections in the file change for different reasons, at different times
 
-### 5.3. Ngắn gọn, đúng trọng tâm
+### 5.3. Concise and on point
 
-Mỗi token trong context window đều có giá. Viết ngắn nhất có thể mà không mất thông tin.
+Every token in the context window has a cost. Write as briefly as possible without losing information.
 
-- Không viết lịch sử, bối cảnh dài dòng, lý do tại sao chọn cách này
-- Không lặp lại thông tin đã có ở file khác
-- Dùng bảng thay vì đoạn văn khi liệt kê
-- Code example ngắn, chỉ đủ minh họa — không viết full class
+- Do not write long histories, background, or explanations of why a particular approach was chosen
+- Do not repeat information already present in another file
+- Use tables instead of paragraphs for lists
+- Keep code examples short — just enough to illustrate the point; do not write full classes
 
-**Sai:**
+**Wrong:**
 ```markdown
-## Giới thiệu về Async/Await
+## Introduction to Async/Await
 
-C# giới thiệu async/await từ phiên bản 5.0 vào năm 2012. Đây là một tính năng 
-quan trọng giúp lập trình viên viết code bất đồng bộ dễ dàng hơn. Trước khi có 
-async/await, developers phải dùng callbacks hoặc Task.ContinueWith, rất khó đọc 
-và maintain. Async/await giải quyết vấn đề này bằng cách...
+C# introduced async/await in version 5.0 in 2012. This is an important feature 
+that helps developers write asynchronous code more easily. Before async/await, 
+developers had to use callbacks or Task.ContinueWith, which was very hard to read 
+and maintain. Async/await solves this by...
 ```
 
-**Đúng:**
+**Correct:**
 ```markdown
 ## Async/Await
 
-PHẢI dùng `async Task` cho I/O operations.
-PHẢI pass `CancellationToken` cho mọi async methods.
-KHÔNG ĐƯỢC dùng `async void` (trừ event handlers).
-KHÔNG ĐƯỢC gọi `.Result` hoặc `.Wait()` (deadlock risk).
+MUST use `async Task` for I/O operations.
+MUST pass `CancellationToken` to all async methods.
+MUST NOT use `async void` (except event handlers).
+MUST NOT call `.Result` or `.Wait()` (deadlock risk).
 ```
 
-### 5.4. Cấu trúc khuyến nghị cho từng loại memory
+### 5.4. Recommended structure for each memory type
 
 **Technical memory:**
 ```markdown
-# [Tên chủ đề]
+# [Topic name]
 
-## Khi nào dùng
-[Mô tả ngắn tình huống áp dụng]
+## When to use
+[Brief description of applicable situations]
 
 ## Rules
-[Liệt kê PHẢI/KHÔNG ĐƯỢC]
+[List of MUST/MUST NOT]
 
 ## Patterns
-[Ví dụ code DO/DON'T]
+[DO/DON'T code examples]
 
-## Lưu ý
+## Notes
 [Edge cases, pitfalls]
 ```
 
 **Domain memory:**
 ```markdown
-# [Tên concept/workflow]
+# [Concept/workflow name]
 
-## Định nghĩa
-[Concept này là gì, trong 1-2 câu]
+## Definition
+[What this concept is, in 1–2 sentences]
 
-## Quy trình / Trạng thái
-[Mô tả flow hoặc state machine]
+## Process / States
+[Flow description or state machine]
 
 ## Business rules
-[Các quy tắc nghiệp vụ]
+[Business rules]
 
-## Thuật ngữ liên quan
-[Terms cần biết, link đến glossary nếu cần]
+## Related terminology
+[Terms to know, link to glossary if needed]
 ```
 
 **Rules memory:**
 ```markdown
-# [Tên constraint]
+# [Constraint name]
 
-## PHẢI
-[Liệt kê bắt buộc tuân thủ]
+## MUST
+[List of mandatory requirements]
 
-## KHÔNG ĐƯỢC
-[Liệt kê cấm]
+## MUST NOT
+[List of prohibitions]
 
-## Ví dụ
-[DO/DON'T với code hoặc mô tả cụ thể]
+## Examples
+[DO/DON'T with code or specific descriptions]
 
-## Ngoại lệ
-[Trường hợp nào được phép không tuân thủ, nếu có]
+## Exceptions
+[Cases where non-compliance is permitted, if any]
 ```
 
-Đây là cấu trúc khuyến nghị, không bắt buộc. Tùy nội dung mà điều chỉnh cho phù hợp — quan trọng là rõ ràng, cụ thể, và viết cho AI đọc.
+This is a recommended structure, not a requirement. Adjust it to suit the content — what matters is that it is clear, specific, and written for AI to read.
 
 ---
 
-## 6. Thêm mới memory
+## 6. Adding New Memory
 
-### Quy trình:
-
-```
-Bước 1: Xác định memory thuộc store nào (technical / domain / rules)
-Bước 2: Viết file markdown theo quy tắc mục 5
-Bước 3: Đặt file vào thư mục phù hợp trong store
-Bước 4: Thêm entry vào _registry.yaml của store đó
-```
-
-### Nguyên tắc:
-
-- Chỉ tạo file mới và thêm entry vào registry — không sửa file nào khác (O)
-- Kiểm tra id không trùng với entry đã có trong cùng registry
-- Viết desc đủ rõ để người khác hiểu file chứa gì mà không cần mở
-
-### Ví dụ:
-
-Team bắt đầu dùng SignalR cho real-time features.
+### Process:
 
 ```
-1. Tạo file: technical/framework/signalr-patterns.md
-2. Thêm vào technical/_registry.yaml:
+Step 1: Determine which store the memory belongs to (technical / domain / rules)
+Step 2: Write the markdown file following the rules in section 5
+Step 3: Place the file in the appropriate subdirectory within the store
+Step 4: Add an entry to the store's _registry.yaml
+```
+
+### Principles:
+
+- Only create a new file and add an entry to the registry — do not modify any other file (O)
+- Verify that the id does not conflict with any existing entry in the same registry
+- Write a desc that is clear enough for others to understand what the file contains without opening it
+
+### Example:
+
+The team starts using SignalR for real-time features.
+
+```
+1. Create file: technical/framework/signalr-patterns.md
+2. Add to technical/_registry.yaml:
 
    framework:
-     ...entries hiện có...
+     ...existing entries...
      - id: signalr-patterns
        path: framework/signalr-patterns.md
        desc: "SignalR hub patterns, group management, connection lifecycle"
 
-3. Xong. Không sửa thêm gì.
+3. Done. No further modifications needed.
 ```
 
 ---
 
-## 7. Cập nhật memory
+## 7. Updating Memory
 
-### Khi nào cần cập nhật:
+### When to update:
 
-- Kỹ thuật thay đổi (upgrade framework version, đổi pattern)
-- Nghiệp vụ thay đổi (client thay đổi business rule)
-- Constraint thay đổi (client thêm security requirement)
+- Technology changes (framework version upgrade, pattern change)
+- Business domain changes (client changes a business rule)
+- Constraints change (client adds a security requirement)
 
-### Quy trình:
+### Process:
 
 ```
-Bước 1: Sửa nội dung file markdown
-Bước 2: Nếu scope thay đổi đáng kể → cập nhật desc trong registry
-Bước 3: Nếu file được tách nhỏ → tạo files mới, cập nhật registry, xóa file cũ
+Step 1: Edit the markdown file content
+Step 2: If the scope changes significantly → update the desc in the registry
+Step 3: If the file is being split → create new files, update the registry, delete the old file
 ```
 
-### Nguyên tắc:
+### Principles:
 
-- Cập nhật nội dung file: tự do, không cần thay đổi gì khác
-- Cập nhật desc trong registry: chỉ khi nội dung thay đổi đáng kể đến mức desc cũ không còn chính xác
-- Nếu cập nhật làm file phình to hoặc cover thêm chủ đề mới → tách file (S)
+- Updating file content: free to do, no other changes required
+- Updating the desc in the registry: only when the content changes significantly enough that the old desc is no longer accurate
+- If an update causes the file to grow large or cover additional topics → split the file (S)
 
 ---
 
-## 8. Xóa memory
+## 8. Deleting Memory
 
-### Khi nào cần xóa:
+### When to delete:
 
-- Kỹ thuật không còn dùng (bỏ Redis, chuyển sang Memcached)
-- Nghiệp vụ không còn tồn tại (bỏ tính năng)
-- Đã merge vào file khác
+- A technology is no longer in use (dropped Redis, switched to Memcached)
+- A business feature no longer exists (feature removed)
+- Content has been merged into another file
 
-### Quy trình:
+### Process:
 
 ```
-Bước 1: Xóa entry khỏi _registry.yaml
-Bước 2: Xóa file markdown
+Step 1: Remove the entry from _registry.yaml
+Step 2: Delete the markdown file
 ```
 
-### Nguyên tắc:
+### Principles:
 
-- Xóa entry trước, xóa file sau — tránh tình trạng registry trỏ đến file không tồn tại
-- Kiểm tra không có file nào khác reference đến id sắp xóa (nếu có cross-reference)
-- Xóa trong 1 store không ảnh hưởng store khác
+- Remove the registry entry first, then delete the file — avoid leaving the registry pointing to a non-existent file
+- Check that no other file references the id being deleted (if cross-references exist)
+- Deletion in one store does not affect other stores
 
 ---
 
-## 9. Bảo trì memory
+## 9. Memory Maintenance
 
-### 9.1. Kiểm tra định kỳ
+### 9.1. Periodic checks
 
-**Hàng sprint (2-4 tuần):**
-- Có file nào trong store mà chưa có entry trong registry? (file mồ côi)
-- Có entry nào trong registry mà file không tồn tại? (entry chết)
-- Có file nào nội dung đã lỗi thời?
+**Every sprint (2–4 weeks):**
+- Are there any files in the store that have no registry entry? (orphaned files)
+- Are there any registry entries pointing to files that do not exist? (dead entries)
+- Is there any file whose content has become outdated?
 
-**Hàng quý:**
-- Review toàn bộ technical store — còn đúng với tech stack hiện tại?
-- Review toàn bộ rules store — còn đúng với constraint hiện tại?
-- Có file nào phình to cần tách? (kiểm tra S)
+**Every quarter:**
+- Review the entire technical store — is it still accurate for the current tech stack?
+- Review the entire rules store — is it still accurate for the current constraints?
+- Are there any files that have grown too large and need to be split? (check S)
 
-### 9.2. Trách nhiệm
+### 9.2. Responsibilities
 
-| Store | Người chịu trách nhiệm chính |
+| Store | Primary responsible party |
 |---|---|
 | Technical | Tech lead / Senior developer |
 | Domain | Business analyst / Tech lead |
 | Rules | Tech lead / Project manager |
-| Registry sync | Tech lead (đảm bảo registry luôn đồng bộ) |
+| Registry sync | Tech lead (ensures the registry stays in sync) |
 
-### 9.3. Dấu hiệu memory đang có vấn đề
+### 9.3. Signs that memory has problems
 
-- AI output không tuân thủ rules → kiểm tra rules store có đầy đủ và rõ ràng không
-- AI output sai nghiệp vụ → kiểm tra domain store có chính xác không
-- AI output dùng sai pattern/API → kiểm tra technical store có cập nhật không
-- AI output đúng nhưng không nhất quán giữa các lần → kiểm tra có files conflict nhau không
+- AI output does not comply with rules → check whether the rules store is complete and clear
+- AI output is incorrect on domain matters → check whether the domain store is accurate
+- AI output uses wrong patterns or APIs → check whether the technical store is up to date
+- AI output is correct but inconsistent across invocations → check for conflicting files
 
 ---
 
-## 10. Context — Memory ephemeral
+## 10. Context — Ephemeral Memory
 
-Context là loại memory thứ 4, nhưng không lưu trữ trong hệ thống. Con người cung cấp mỗi lần invoke skill.
+Context is the fourth type of memory, but it is not stored in the system. It is provided by humans each time a skill is invoked.
 
-### Context chứa gì:
+### What context contains:
 
-- Mô tả công việc cần thực hiện
+- A description of the work to be done
 - Acceptance criteria / expected output
-- Thông tin bổ sung specific cho task hiện tại
+- Additional information specific to the current task
 
-### Context không chứa:
+### What context does not contain:
 
-- Kiến thức kỹ thuật chung (thuộc technical store)
-- Kiến thức nghiệp vụ chung (thuộc domain store)
-- Quy tắc, conventions (thuộc rules store)
+- General technical knowledge (belongs in the technical store)
+- General domain knowledge (belongs in the domain store)
+- Rules and conventions (belongs in the rules store)
 
-### Ranh giới rõ ràng:
+### Clear boundary:
 
-Nếu thông tin sẽ **dùng lại** cho nhiều tasks → nó thuộc về 1 trong 3 stores, không phải context.
+If information will be **reused** across many tasks → it belongs in one of the three stores, not in context.
 
-Nếu thông tin chỉ **đúng cho task này** → nó là context.
+If information is **only valid for this specific task** → it is context.
 
 ---
 
-## 11. HARNESS.yaml — File gốc
+## 11. HARNESS.yaml — The Root File
 
-File entry point mô tả tổng quan memory system của dự án:
+The entry point file that describes the overall memory system of the project:
 
 ```yaml
 # HARNESS.yaml
 
-project: "Tên dự án"
-description: "Mô tả ngắn về dự án"
+project: "Project name"
+description: "Short description of the project"
 
 memory_stores:
   technical:
     path: technical/
     registry: technical/_registry.yaml
-    description: "Hiểu biết kỹ thuật: ngôn ngữ, framework, patterns"
+    description: "Technical knowledge: language, framework, patterns"
 
   domain:
     path: domain/
     registry: domain/_registry.yaml
-    description: "Hiểu biết nghiệp vụ: workflow, business rules, thuật ngữ"
+    description: "Domain knowledge: workflow, business rules, terminology"
 
   rules:
     path: rules/
     registry: rules/_registry.yaml
-    description: "Ràng buộc dự án: coding standards, security, API conventions"
+    description: "Project constraints: coding standards, security, API conventions"
 ```
 
-Ai mới tiếp cận dự án, đọc file này là hiểu memory system được tổ chức như thế nào.
+Anyone new to the project can read this file to understand how the memory system is organized.
 
 ---
 
-## Tóm tắt
+## Summary
 
-| Nguyên tắc | Áp dụng |
+| Principle | Application |
 |---|---|
-| **S — Single Responsibility** | 1 store = 1 loại memory. 1 file = 1 chủ đề. |
-| **O — Open/Closed** | Thêm mới = thêm file + thêm entry. Không sửa thứ khác. |
-| **I — Interface Segregation** | Chỉ load files cần thiết, không dump toàn bộ store. |
-| **D — Dependency Inversion** | Truy xuất qua registry, không trỏ thẳng vào file path. |
-| **Registry** | Mục lục duy nhất. Entry = id + path + desc. Luôn đồng bộ với thực tế. |
-| **Files** | Viết cho AI đọc. Cụ thể, có ví dụ DO/DON'T, ngắn gọn. |
-| **Context** | Không lưu trữ. Do con người cung cấp mỗi lần invoke. |
-| **Bảo trì** | Registry sync mỗi sprint. Full review mỗi quý. |
+| **S — Single Responsibility** | 1 store = 1 type of memory. 1 file = 1 topic. |
+| **O — Open/Closed** | Add new = add file + add entry. Do not modify anything else. |
+| **I — Interface Segregation** | Load only the necessary files; never dump the entire store. |
+| **D — Dependency Inversion** | Retrieve via registry; never point directly to a file path. |
+| **Registry** | The sole table of contents. Entry = id + path + desc. Always in sync with reality. |
+| **Files** | Write for AI to read. Specific, with DO/DON'T examples, concise. |
+| **Context** | Not stored. Provided by humans each time a skill is invoked. |
+| **Maintenance** | Registry sync every sprint. Full review every quarter. |
