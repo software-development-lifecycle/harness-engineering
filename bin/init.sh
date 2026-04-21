@@ -72,6 +72,8 @@ if [[ "$DRY_RUN" == true ]]; then
   echo "  memory/domain/_registry.yaml"
   echo "  memory/rules/"
   echo "  memory/rules/_registry.yaml"
+  echo "  .claude/commands/"
+  echo "  .claude/commands/memory-scan.md"
   exit 0
 fi
 
@@ -106,4 +108,18 @@ echo "# technical/_registry.yaml" > "$PROJECT_DIR/memory/technical/_registry.yam
 echo "# domain/_registry.yaml" > "$PROJECT_DIR/memory/domain/_registry.yaml"
 echo "# rules/_registry.yaml" > "$PROJECT_DIR/memory/rules/_registry.yaml"
 
+# Install memory toolkit skills
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILLS_DIR="$SCRIPT_DIR/skills"
+
+mkdir -p "$PROJECT_DIR/.claude/commands"
+
+if [[ -d "$SKILLS_DIR" ]]; then
+  for skill_file in "$SKILLS_DIR"/*.md; do
+    [[ -f "$skill_file" ]] || continue
+    cp "$skill_file" "$PROJECT_DIR/.claude/commands/"
+  done
+fi
+
 echo "Created Harness Engineering memory structure at $PROJECT_DIR/memory/"
+echo "Installed memory toolkit skills at $PROJECT_DIR/.claude/commands/"
