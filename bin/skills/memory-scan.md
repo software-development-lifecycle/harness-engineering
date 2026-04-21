@@ -70,7 +70,7 @@ Read config/manifest files first — they give the most signal for the least tok
 | `requirements.txt` / `Pipfile` | Python deps, framework (django, flask, fastapi, etc.) |
 | `go.mod` | Go module name, dependencies |
 | `Cargo.toml` | Rust crate name, dependencies |
-| `*.csproj` | .NET target framework, NuGet packages |
+| `*.csproj` / `*.sln` | .NET target framework, NuGet packages |
 | `pom.xml` / `build.gradle` | Java deps, framework (spring, etc.) |
 | `composer.json` | PHP deps, framework (laravel, symfony, etc.) |
 | `Gemfile` | Ruby deps, framework (rails, sinatra, etc.) |
