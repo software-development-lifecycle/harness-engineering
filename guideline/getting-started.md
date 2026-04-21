@@ -98,9 +98,9 @@ echo "# rules/_registry.yaml" > memory/rules/_registry.yaml
 
 Pick a store and a topic. For this example, create a technical memory file about JWT authentication.
 
-Copy the template from `guideline/templates/technical/template.md` and fill it in:
+Copy the template from `guideline/templates/technical/template.md` and fill it in. Save it as `memory/technical/jwt-auth.md`:
 
-```markdown
+```yaml
 ---
 id: jwt-auth
 store: technical
@@ -108,55 +108,9 @@ title: JWT Authentication
 description: "JWT token structure, validation middleware, refresh token flow"
 last_updated: 2026-04-21
 ---
-
-# JWT Authentication
-
-JWT (JSON Web Tokens) handle stateless authentication across the platform's API layer.
-
-## When to Use
-
-- Authenticating API requests from the frontend SPA
-- Service-to-service authentication for internal APIs
-- Encoding user claims (roles, permissions) in the token payload
-
-## How It Works
-
-The platform issues a short-lived access token (15 min) and a long-lived refresh token (7 days). The access token is sent as a Bearer header on every API request. The middleware validates the signature, checks expiration, and extracts claims.
-
-## Patterns
-
-Validating a JWT in ASP.NET middleware:
-
-```csharp
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidateAudience = true,
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            ValidateLifetime = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-        };
-    });
 ```
 
-## Trade-offs
-
-| Strength | Limitation |
-|---|---|
-| Stateless — no server-side session storage | Cannot revoke individual tokens before expiry |
-| Self-contained claims reduce database lookups | Token size grows with claims count |
-| Works across services without shared state | Requires secure key management |
-
-## Notes
-
-- Store refresh tokens in an HTTP-only cookie, never in localStorage.
-- Rotate signing keys quarterly. Support two active keys during rotation to avoid invalidating in-flight tokens.
-```
+Then write the markdown body following the template's section structure (`## When to Use`, `## How It Works`, `## Patterns`, `## Trade-offs`, `## Notes`). See `guideline/templates/technical/example.md` for a fully worked example of what a completed file looks like.
 
 ### Step 5: Register the memory file
 
@@ -234,13 +188,13 @@ Read the `desc` field of each entry — it tells you what the file contains with
 Pick an entry from a registry and open the file. For example, if the technical registry lists:
 
 ```yaml
-caching:
-  - id: redis-caching
-    path: caching/redis-caching.md
-    desc: "Redis caching patterns, cache-aside strategy, key naming, TTL management"
+auth:
+  - id: jwt-auth
+    path: auth/jwt-auth.md
+    desc: "JWT token structure, validation middleware, refresh token flow"
 ```
 
-Open `memory/technical/caching/redis-caching.md`. Note the structure:
+Open `memory/technical/auth/jwt-auth.md`. Note the structure:
 - YAML frontmatter with `id`, `store`, `title`, `description`, `last_updated`
 - Markdown body with topic-specific sections
 
@@ -253,7 +207,7 @@ Identify knowledge that's missing — something you learned that the next person
 - Documented a business workflow? → `domain/`
 - Established a coding convention? → `rules/`
 
-Copy the corresponding template from `guideline/templates/{store}/template.md` and fill it in with real project content.
+Copy the corresponding template from `guideline/templates/<store>/template.md` and fill it in with real project content.
 
 ### Step 5: Register it
 
@@ -271,11 +225,11 @@ category:
 Same checks as Path 1 Step 6:
 
 ```bash
-# Confirm the file exists at the registered path
-ls memory/{store}/category/your-file.md
+# Confirm the file exists at the registered path (replace <store> with technical, domain, or rules)
+ls memory/<store>/category/your-file.md
 
 # Confirm frontmatter matches
-head -7 memory/{store}/category/your-file.md
+head -7 memory/<store>/category/your-file.md
 ```
 
 Confirm: registry `path` resolves, `id` matches, `store` field is correct.
