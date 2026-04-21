@@ -74,6 +74,10 @@ if [[ "$DRY_RUN" == true ]]; then
   echo "  memory/rules/_registry.yaml"
   echo "  .claude/commands/"
   echo "  .claude/commands/memory-scan.md"
+  echo "  .claude/commands/memory-seeding.md"
+  echo "  .claude/commands/memory-seeding-knowledge/"
+  echo "  .claude/commands/memory-extract.md"
+  echo "  .claude/commands/memory-interview.md"
   exit 0
 fi
 
@@ -118,6 +122,10 @@ if [[ -d "$SKILLS_DIR" ]]; then
   for skill_file in "$SKILLS_DIR"/*.md; do
     [[ -f "$skill_file" ]] || continue
     cp "$skill_file" "$PROJECT_DIR/.claude/commands/"
+  done
+  for skill_dir in "$SKILLS_DIR"/*/; do
+    [[ -d "$skill_dir" ]] || continue
+    cp -r "$skill_dir" "$PROJECT_DIR/.claude/commands/"
   done
 fi
 
