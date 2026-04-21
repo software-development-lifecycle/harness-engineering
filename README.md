@@ -30,15 +30,31 @@ Before starting to work with this project, please read the following guidelines 
 ```
 harness-engineering/
 ├── README.md
+├── CLAUDE.md                 # Claude Code context for this repo
+├── CONTRIBUTING.md           # Contribution guidelines
+├── LICENSE                   # MIT License
+├── bin/
+│   └── init.sh               # Bootstrapping script for new projects
+├── docs/
+│   └── superpowers/
+│       ├── plans/            # Implementation plans
+│       └── specs/            # Design specs
 ├── guideline/                # Methodology documentation
-│   └── memory-management-best-practices.md
-└── memory/                   # Project memory system
-    ├── HARNESS.yaml          # Root file describing the memory system overview
-    ├── technical/            # Technical knowledge: languages, frameworks, patterns
+│   ├── getting-started.md    # Onboarding guide (new project / joining existing)
+│   ├── memory-management-best-practices.md
+│   ├── images/               # Architecture diagrams
+│   ├── jsx/                  # Diagram source files
+│   └── templates/            # Memory file templates and examples
+│       ├── technical/
+│       ├── domain/
+│       └── rules/
+└── memory/                   # Reference memory structure
+    ├── HARNESS.yaml          # Root file describing the memory system
+    ├── technical/
     │   └── _registry.yaml
-    ├── domain/               # Business knowledge: workflows, business rules, terminology
+    ├── domain/
     │   └── _registry.yaml
-    └── rules/                # Project constraints: coding standards, security, API conventions
+    └── rules/
         └── _registry.yaml
 ```
 
