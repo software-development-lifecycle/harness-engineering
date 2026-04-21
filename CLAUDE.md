@@ -15,7 +15,7 @@ This repo contains the methodology documentation, guidelines, templates, and a r
 
 ## Project Structure
 
-- `guideline/` — methodology documentation, best practices guide, and templates (technical/domain/rules)
+- `guideline/` — methodology documentation, best practices guide, templates, and supporting assets (images, diagrams)
 - `guideline/templates/` — scaffold templates and worked examples for each memory store
 - `memory/` — reference memory structure with `HARNESS.yaml` and 3 stores, each containing a `_registry.yaml`
 - `docs/superpowers/` — design specs and implementation plans
