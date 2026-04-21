@@ -12,6 +12,11 @@ DRY_RUN=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --name)
+      if [[ $# -lt 2 ]]; then
+        echo "Error: --name requires a value" >&2
+        usage
+        exit 1
+      fi
       PROJECT_NAME="$2"
       shift 2
       ;;
@@ -72,10 +77,12 @@ fi
 
 mkdir -p "$PROJECT_DIR/memory/technical" "$PROJECT_DIR/memory/domain" "$PROJECT_DIR/memory/rules"
 
+SAFE_NAME="${PROJECT_NAME//\"/\\\"}"
+
 cat > "$PROJECT_DIR/memory/HARNESS.yaml" << EOF
 # HARNESS.yaml
 
-project: "$PROJECT_NAME"
+project: "$SAFE_NAME"
 description: ""
 
 memory_stores:
