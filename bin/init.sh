@@ -72,6 +72,7 @@ if [[ "$DRY_RUN" == true ]]; then
   echo "  memory/domain/_registry.yaml"
   echo "  memory/rules/"
   echo "  memory/rules/_registry.yaml"
+  echo "  memory/.harness-version"
   echo "  .claude/commands/"
   echo "  .claude/commands/memory-scan.md"
   echo "  .claude/commands/memory-analyze.md"
@@ -116,6 +117,24 @@ echo "# rules/_registry.yaml" > "$PROJECT_DIR/memory/rules/_registry.yaml"
 # Install memory toolkit skills
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILLS_DIR="$SCRIPT_DIR/skills"
+
+# Write .harness-version with repo info
+REPO_URL=$(git -C "$SCRIPT_DIR" remote get-url origin 2>/dev/null || echo "")
+REPO_ID=""
+if [[ -n "$REPO_URL" ]]; then
+  # Extract owner/repo from SSH or HTTPS URL
+  REPO_ID=$(echo "$REPO_URL" | sed -E 's#(git@github\.com:|https://github\.com/)##' | sed 's/\.git$//')
+fi
+
+LATEST_TAG=$(gh release view --repo "$REPO_ID" --json tagName --jq '.tagName' 2>/dev/null || echo "")
+if [[ -z "$LATEST_TAG" ]]; then
+  LATEST_TAG="v0.0.0"
+fi
+
+cat > "$PROJECT_DIR/memory/.harness-version" << EOF
+version: $LATEST_TAG
+repo: $REPO_ID
+EOF
 
 mkdir -p "$PROJECT_DIR/.claude/commands"
 
