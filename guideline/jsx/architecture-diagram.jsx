@@ -3,21 +3,21 @@ import { useState } from "react";
 const stores = [
   {
     title: "Technical knowledge",
-    subtitle: "Hiểu biết kỹ thuật",
+    subtitle: "How to build — languages, frameworks, patterns",
     color: { bg: "#EEEDFE", border: "#534AB7", title: "#3C3489", text: "#534AB7" },
     registry: "_registry.yaml",
     files: ["language/csharp-async.md", "framework/efcore-patterns.md", "patterns/repository.md"],
   },
   {
     title: "Domain knowledge",
-    subtitle: "Hiểu biết nghiệp vụ",
+    subtitle: "What to build — workflows, business rules, terminology",
     color: { bg: "#E1F5EE", border: "#0F6E56", title: "#085041", text: "#0F6E56" },
     registry: "_registry.yaml",
     files: ["payment/workflow.md", "order/lifecycle.md", "glossary.md"],
   },
   {
     title: "Rules",
-    subtitle: "Ràng buộc dự án",
+    subtitle: "Constraints — coding standards, security, API conventions",
     color: { bg: "#FAECE7", border: "#993C1D", title: "#712B13", text: "#993C1D" },
     registry: "_registry.yaml",
     files: ["coding/coding-standards.md", "security/security.md", "api/api-design.md"],
@@ -25,16 +25,16 @@ const stores = [
 ];
 
 const solid = [
-  { letter: "S", desc: "Mỗi store = 1 loại memory. Mỗi file = 1 chủ đề." },
-  { letter: "O", desc: "Thêm file + entry. Không sửa gì khác." },
-  { letter: "I", desc: "Chỉ load files cần, không dump toàn bộ." },
-  { letter: "D", desc: "Truy xuất qua registry, không trỏ thẳng file." },
+  { letter: "S", desc: "Each store = 1 memory type. Each file = 1 topic." },
+  { letter: "O", desc: "Add file + registry entry. No other changes needed." },
+  { letter: "I", desc: "Load only the files you need, not everything." },
+  { letter: "D", desc: "Access via registry, never point to files directly." },
 ];
 
 const roles = [
-  { role: "Xây dựng memory stores", who: "Tech lead, BA, domain expert" },
-  { role: "Cung cấp context", who: "Dev, mỗi lần invoke skill" },
-  { role: "Review output (sensor)", who: "Human-as-sensor, giai đoạn đầu" },
+  { role: "Build memory stores", who: "Tech lead, BA, domain expert" },
+  { role: "Provide context", who: "Dev, each time a skill is invoked" },
+  { role: "Review output (sensor)", who: "Human-as-sensor, early stage" },
 ];
 
 function StoreCard({ store }) {
@@ -91,7 +91,7 @@ export default function ArchitectureDiagram() {
           Memory architecture
         </div>
         <div style={{ fontSize: 13, color: "var(--color-text-secondary, #888)", marginTop: 4 }}>
-          Mỗi store độc lập, truy xuất qua registry
+          Each store is independent, accessed via registry
         </div>
       </div>
 
@@ -145,7 +145,7 @@ export default function ArchitectureDiagram() {
           padding: "6px 0",
         }}
       >
-        Mỗi store mở cho thêm file mới, đóng cho sửa cấu trúc (O)
+        Each store is open for new files, closed for structural changes (O)
       </div>
 
       {/* Registry = interface */}
@@ -159,7 +159,7 @@ export default function ArchitectureDiagram() {
         }}
       >
         <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary, #333)" }}>
-          Truy xuất qua registry — không trỏ thẳng vào file (D)
+          Access via registry — never point directly to files (D)
         </div>
       </div>
 
@@ -177,7 +177,7 @@ export default function ArchitectureDiagram() {
         >
           <div style={{ fontWeight: 600, fontSize: 14, color: "#633806" }}>Context</div>
           <div style={{ fontSize: 12, color: "#854F0B", marginTop: 4 }}>
-            Ephemeral — con người cung cấp mỗi lần invoke
+            Ephemeral — provided by humans each invocation
           </div>
           <div style={{ fontSize: 11, color: "#999", marginTop: 2 }}>
             Task description, acceptance criteria
@@ -208,10 +208,10 @@ export default function ArchitectureDiagram() {
           }}
         >
           <div style={{ fontWeight: 600, fontSize: 14, color: "var(--color-text-primary, #333)" }}>
-            AI Model (bộ não)
+            AI Model (the brain)
           </div>
           <div style={{ fontSize: 12, color: "var(--color-text-secondary, #666)", marginTop: 4 }}>
-            Nhận memory + context → xử lý → output
+            Receives memory + context → processes → output
           </div>
           <div style={{ fontSize: 11, color: "var(--color-text-tertiary, #999)", marginTop: 2 }}>
             Claude / GPT / Gemini / ...
@@ -235,7 +235,7 @@ export default function ArchitectureDiagram() {
             marginBottom: 10,
           }}
         >
-          Vai trò con người
+          Human roles
         </div>
         <div style={{ display: "flex", gap: 10 }}>
           {roles.map((r) => (
@@ -271,8 +271,8 @@ export default function ArchitectureDiagram() {
           borderTop: "1px solid var(--color-border-tertiary, #eee)",
         }}
       >
-        Harness = Memory system cho AI — tổ chức, duy trì bởi con người, nạp vào model mỗi phiên làm
-        việc
+        Harness = Memory system for AI — organized and maintained by humans, loaded into the model
+        each session
       </div>
     </div>
   );
