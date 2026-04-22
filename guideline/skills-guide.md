@@ -15,6 +15,7 @@ The Memory Toolkit is a set of AI-powered skills that automate the creation and 
 | [Building](#memorybuilding) | `/memory:building` | Approved plan | Memory files + registry entries |
 | [Extract](#memoryextract) | `/memory:extract` | Any document (file, URL, paste) | Memory files per extracted topic |
 | [Interview](#memoryinterview) | `/memory:interview` | Conversational Q&A | Memory files from tribal knowledge |
+| [Check for Updates](#check-for-updates) | `/check-for-updates` | `memory/.harness-version` | Updated skill files |
 
 All skills are **interactive** — they propose, you review, they write. Nothing is created without your approval.
 
@@ -230,6 +231,34 @@ If no matching knowledge file exists, the skill proceeds with general guidance f
 **Built-in question bank:** The skill has starter questions for each store type and adapts dynamically based on your answers. Short answers get follow-up probes; mentions of technologies, workflows, or incidents trigger deeper exploration.
 
 **Difference from extract:** Extract reads existing documents. Interview creates knowledge from scratch through conversation. Use extract when the knowledge is already written; use interview when it's only in someone's head.
+
+---
+
+### check-for-updates
+
+**Purpose:** Check for new Harness Engineering releases on GitHub and update the installed skills.
+
+**When to use:**
+- Periodically, to check if newer skills are available
+- After being notified that a new version has been released
+- When skills seem outdated or a known fix has been published
+
+**What it does:**
+1. Reads `memory/.harness-version` to get the installed version and GitHub repo
+2. Checks the latest GitHub release via `gh` CLI
+3. Compares versions — if already up to date, reports and stops
+4. Shows release notes and asks for confirmation
+5. Downloads the release archive, extracts, and copies files into the project
+6. Updates `memory/.harness-version` with the new version
+
+**What it does NOT do:**
+- Modify any files under `memory/` (content, registries, HARNESS.yaml)
+- Run automatically — always requires user confirmation
+- Downgrade — only updates to newer versions
+
+**Prerequisites:**
+- `gh` CLI installed and authenticated (`gh auth login`)
+- `memory/.harness-version` exists with `version` and `repo` fields (created by `init.sh`)
 
 ---
 
