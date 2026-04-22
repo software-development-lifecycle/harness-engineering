@@ -33,6 +33,15 @@ The core idea: an AI Model is like an exceptionally skilled developer who loses 
 
 The init script creates the `memory/` directory structure and installs [Memory Toolkit Skills](#memory-toolkit-skills) into your project's `.claude/commands/`.
 
+### Updating an Existing Project
+
+```bash
+# Run the check-for-updates skill in your project
+/check-for-updates
+```
+
+The skill checks GitHub releases, shows what's new, and asks before applying changes. Your memory content is never touched.
+
 ## Guidelines
 
 | Document | Description |
@@ -52,6 +61,7 @@ The Memory Toolkit is a set of AI skills that automate the creation and maintena
 | **Building** | `/memory:building` | Execute an approved plan to build memory files with two-stage review |
 | **Extract** | `/memory:extract` | Extract knowledge from any document (SRS, PRD, API specs) into memory files |
 | **Interview** | `/memory:interview` | Capture tribal knowledge through structured Q&A with team members |
+| **Check for Updates** | `/check-for-updates` | Check for new Harness Engineering releases and apply updates |
 
 ### Recommended Workflow
 
@@ -93,6 +103,7 @@ harness-engineering/
 │       ├── memory-building.md
 │       ├── memory-extract.md
 │       ├── memory-interview.md
+│       ├── check-for-updates.md
 │       └── memory-building-knowledge/
 │           ├── csharp.md
 │           ├── go.md
