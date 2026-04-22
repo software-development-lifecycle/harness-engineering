@@ -15,15 +15,75 @@ The core idea: an AI Model is like an exceptionally skilled developer who loses 
 - **Memory Architecture** — An external knowledge storage system organized into 3 stores: Technical, Domain, and Rules
 - **Registry-based Retrieval** — A smart memory retrieval mechanism via registry, loading only what is needed
 - **SOLID Principles for Memory** — Applying SOLID principles to the organization and management of memory
+- **Memory Toolkit Skills** — AI-powered skills that automate memory creation through scanning, seeding, extraction, and interviews
 - **Guidelines** — A comprehensive set of documents detailing how to practice the methodology
 
-## Pre-requisites
+## Quick Start
 
-Before starting to work with this project, please read the following guidelines carefully:
+```bash
+# 1. Initialize memory structure in your project
+./bin/init.sh /path/to/your-project
 
-| Guideline | Description |
+# 2. Scan the project to assess its state
+/memory:scan
+
+# 3. Seed initial knowledge from source code or documents
+/memory:seeding
+```
+
+The init script creates the `memory/` directory structure and installs [Memory Toolkit Skills](#memory-toolkit-skills) into your project's `.claude/commands/`.
+
+## Guidelines
+
+| Document | Description |
 |---|---|
-| [Memory Management Best Practices](guideline/memory-management-best-practices.md) | A comprehensive guide on how to organize, write, and maintain the memory system — covering store structure, registry, rules for writing memory files, and procedures for adding, updating, and removing entries |
+| [Getting Started](guideline/getting-started.md) | Onboarding guide — set up a new project or join an existing one |
+| [Memory Management Best Practices](guideline/memory-management-best-practices.md) | How to organize, write, and maintain the memory system — store structure, registry, SOLID principles, and procedures |
+| [Memory Toolkit Skills Guide](guideline/skills-guide.md) | How to use the AI-powered skills for building and maintaining the knowledge base |
+
+## Memory Toolkit Skills
+
+The Memory Toolkit is a set of AI skills that automate the creation and maintenance of memory files. They are installed into your project by `init.sh` and invoked as slash commands in Claude Code.
+
+| Skill | Command | Purpose |
+|---|---|---|
+| **Scan** | `/memory:scan` | Quick project overview — checks memory state, detects tech stack, suggests next steps |
+| **Seeding** | `/memory:seeding` | Deep-analyze source code or requirements docs to generate initial memory files |
+| **Extract** | `/memory:extract` | Extract knowledge from any document (SRS, PRD, API specs) into memory files |
+| **Interview** | `/memory:interview` | Capture tribal knowledge through structured Q&A with team members |
+
+### Recommended Workflow
+
+```
+┌─────────────┐     ┌──────────────┐     ┌──────────────┐
+│ memory:scan  │────▶│memory:seeding│────▶│memory:extract│
+│ (assess)     │     │ (bootstrap)  │     │ (enrich)     │
+└─────────────┘     └──────────────┘     └──────┬───────┘
+                                                 │
+                                          ┌──────▼────────┐
+                                          │memory:interview│
+                                          │ (fill gaps)    │
+                                          └───────────────┘
+```
+
+1. **Scan** first to understand the project state and get recommendations
+2. **Seed** from source code (existing project) or requirements documents (new project)
+3. **Extract** from additional documents as they arrive
+4. **Interview** team members to capture knowledge that isn't written down
+
+See the [Skills Guide](guideline/skills-guide.md) for detailed usage instructions and examples.
+
+### Language Knowledge Files
+
+The seeding skill ships with built-in knowledge for common tech stacks, enabling it to sample the right files and identify framework-specific patterns:
+
+| Language | File |
+|---|---|
+| C# / .NET | `memory-seeding-knowledge/csharp.md` |
+| Go | `memory-seeding-knowledge/go.md` |
+| Java | `memory-seeding-knowledge/java.md` |
+| Node.js / TypeScript | `memory-seeding-knowledge/nodejs.md` |
+| Python | `memory-seeding-knowledge/python.md` |
 
 ## Project Structure
 
@@ -34,7 +94,18 @@ harness-engineering/
 ├── CONTRIBUTING.md           # Contribution guidelines
 ├── LICENSE                   # MIT License
 ├── bin/
-│   └── init.sh               # Bootstrapping script for new projects
+│   ├── init.sh               # Bootstrapping script for new projects
+│   └── skills/               # Memory toolkit skill definitions
+│       ├── memory-scan.md
+│       ├── memory-seeding.md
+│       ├── memory-extract.md
+│       ├── memory-interview.md
+│       └── memory-seeding-knowledge/
+│           ├── csharp.md
+│           ├── go.md
+│           ├── java.md
+│           ├── nodejs.md
+│           └── python.md
 ├── docs/
 │   └── superpowers/
 │       ├── plans/            # Implementation plans
@@ -42,6 +113,7 @@ harness-engineering/
 ├── guideline/                # Methodology documentation
 │   ├── getting-started.md    # Onboarding guide (new project / joining existing)
 │   ├── memory-management-best-practices.md
+│   ├── skills-guide.md       # Memory toolkit skills guide
 │   ├── images/               # Architecture diagrams
 │   ├── jsx/                  # Diagram source files
 │   └── templates/            # Memory file templates and examples

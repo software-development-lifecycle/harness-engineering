@@ -10,13 +10,15 @@ This repo contains the methodology documentation, guidelines, templates, and a r
 |---|---|---|
 | README | `README.md` | Project overview and structure |
 | Best Practices | `guideline/memory-management-best-practices.md` | Before creating or editing any memory files |
+| Skills Guide | `guideline/skills-guide.md` | When using or modifying the memory toolkit skills |
 | Templates | `guideline/templates/` | When scaffolding new memory files |
 | HARNESS.yaml | `memory/HARNESS.yaml` | To understand the memory store layout |
 
 ## Project Structure
 
-- `guideline/` — methodology documentation, best practices guide, templates, and supporting assets (images, diagrams)
+- `guideline/` — methodology documentation, best practices guide, skills guide, templates, and supporting assets
 - `guideline/templates/` — scaffold templates and worked examples for each memory store
+- `bin/skills/` — memory toolkit skill definitions (installed into projects by `init.sh`)
 - `memory/` — reference memory structure with `HARNESS.yaml` and 3 stores, each containing a `_registry.yaml`
 - `docs/superpowers/` — design specs and implementation plans
 
