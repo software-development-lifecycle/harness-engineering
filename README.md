@@ -54,17 +54,7 @@ The Memory Toolkit is a set of AI skills that automate the creation and maintena
 
 ### Recommended Workflow
 
-```
-┌─────────────┐     ┌──────────────┐     ┌──────────────┐
-│ memory:scan  │────▶│memory:seeding│────▶│memory:extract│
-│ (assess)     │     │ (bootstrap)  │     │ (enrich)     │
-└─────────────┘     └──────────────┘     └──────┬───────┘
-                                                 │
-                                          ┌──────▼────────┐
-                                          │memory:interview│
-                                          │ (fill gaps)    │
-                                          └───────────────┘
-```
+![Recommended Workflow](guideline/images/workflow.png)
 
 1. **Scan** first to understand the project state and get recommendations
 2. **Seed** from source code (existing project) or requirements documents (new project)
