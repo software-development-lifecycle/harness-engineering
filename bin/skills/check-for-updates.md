@@ -46,7 +46,7 @@ If the command fails, report the error and suggest the user check:
 
 ### Step 3: Compare versions
 
-Compare the `tagName` from the latest release against the installed `version`.
+Compare the `tagName` from the latest release against the installed `version` using semantic version comparison (compare major, then minor, then patch numerically).
 
 **If the installed version is the same or newer**, report:
 
@@ -94,19 +94,23 @@ TEMP_DIR=$(mktemp -d)
 gh release download {tagName} --repo {repo} --dir "$TEMP_DIR" --pattern "*.tar.gz"
 ```
 
-3. Extract the archive:
+Verify exactly one `.tar.gz` file was downloaded. If zero or more than one, report the issue and stop.
+
+3. Extract the archive and remove the archive file:
 
 ```bash
 tar -xzf "$TEMP_DIR"/*.tar.gz -C "$TEMP_DIR"
+rm "$TEMP_DIR"/*.tar.gz
 ```
 
-4. Copy the extracted files into the project, preserving directory structure. Copy everything **except** anything under `memory/`:
+4. Identify the top-level directory inside the extracted archive — there should be exactly one directory in `$TEMP_DIR` after extraction. Use it as the base for computing relative paths.
+
+Copy the extracted files into the project, preserving directory structure. Copy everything **except** anything under `memory/`:
 
 ```bash
-# Find all files in the extracted archive (exclude memory/ paths)
-find "$TEMP_DIR" -type f | grep -v '/memory/' | while read -r file; do
-  # Determine the relative path (strip the temp dir and any top-level archive folder)
-  rel_path=$(echo "$file" | sed "s|$TEMP_DIR/||" | sed 's|^[^/]*/||')
+ARCHIVE_ROOT=$(find "$TEMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -1)
+find "$ARCHIVE_ROOT" -type f | grep -v '/memory/' | while read -r file; do
+  rel_path="${file#"$ARCHIVE_ROOT/"}"
   if [ -n "$rel_path" ]; then
     mkdir -p "$(dirname "$rel_path")"
     cp "$file" "$rel_path"
