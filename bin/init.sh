@@ -122,13 +122,20 @@ SKILLS_DIR="$SCRIPT_DIR/skills"
 REPO_URL=$(git -C "$SCRIPT_DIR" remote get-url origin 2>/dev/null || echo "")
 REPO_ID=""
 if [[ -n "$REPO_URL" ]]; then
-  # Extract owner/repo from SSH or HTTPS URL
-  REPO_ID=$(echo "$REPO_URL" | sed -E 's#(git@github\.com:|https://github\.com/)##' | sed 's/\.git$//')
+  REPO_ID=$(echo "$REPO_URL" | sed -E 's#(git@github\.com:|https?://github\.com/)##' | sed 's/\.git$//')
+fi
+if [[ -z "$REPO_ID" ]]; then
+  echo "Warning: could not detect GitHub repo from git remote; update checking will not work until repo is set in .harness-version" >&2
 fi
 
-LATEST_TAG=$(gh release view --repo "$REPO_ID" --json tagName --jq '.tagName' 2>/dev/null || echo "")
-if [[ -z "$LATEST_TAG" ]]; then
+if ! command -v gh &>/dev/null; then
+  echo "Warning: gh CLI not found; .harness-version will use version v0.0.0" >&2
   LATEST_TAG="v0.0.0"
+else
+  LATEST_TAG=$(gh release view --repo "$REPO_ID" --json tagName --jq '.tagName' 2>/dev/null || echo "")
+  if [[ -z "$LATEST_TAG" ]]; then
+    LATEST_TAG="v0.0.0"
+  fi
 fi
 
 cat > "$PROJECT_DIR/memory/.harness-version" << EOF
