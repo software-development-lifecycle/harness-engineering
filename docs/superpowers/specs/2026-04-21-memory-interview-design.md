@@ -1,5 +1,7 @@
 # memory:interview — Design Spec
 
+> **NOTE:** References to `memory:seeding` in this document now refer to `memory:analyze`. See [Memory Skills Redesign](../../memory-plan/2026-04-22-memory-skills-redesign-spec.md).
+
 ## Overview
 
 `memory:interview` is a standalone skill that captures tribal knowledge — the expertise that lives in people's heads but not in code or documents. Through structured, adaptive Q&A it helps teams turn conversations into properly formatted memory files.

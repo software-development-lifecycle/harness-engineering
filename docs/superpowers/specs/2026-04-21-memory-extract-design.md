@@ -1,5 +1,7 @@
 # memory:extract — Design Spec
 
+> **NOTE:** References to `memory:seeding` in this document now refer to `memory:analyze`. See [Memory Skills Redesign](../../memory-plan/2026-04-22-memory-skills-redesign-spec.md).
+
 ## Overview
 
 `memory:extract` is a dedicated skill for extracting knowledge from any document into memory files. While `memory:seeding` handles documents as part of its initial setup flow, `memory:extract` is the **reusable tool** for ongoing document extraction — useful anytime new requirements, specs, or reference documents arrive.

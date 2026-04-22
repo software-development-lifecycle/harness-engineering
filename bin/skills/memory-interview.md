@@ -324,7 +324,7 @@ This skill:
 - Can be run repeatedly to capture more knowledge
 
 This skill does NOT:
-- Analyze source code (use memory:seeding for that)
+- Analyze source code (use memory:analyze for that)
 - Read documents (use memory:extract for that)
 - Follow a rigid question script (adapts to answers)
 - Write files without user approval

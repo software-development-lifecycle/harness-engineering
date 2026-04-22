@@ -1,5 +1,7 @@
 # memory:scan — Design Spec
 
+> **NOTE:** References to `memory:analyze` in this document now refer to `memory:analyze`. See [Memory Skills Redesign](../../memory-plan/2026-04-22-memory-skills-redesign-spec.md).
+
 ## Overview
 
 `memory:scan` is a lightweight, project-level Claude Code skill that performs a quick overview of the current project folder and tells the user what to do next. It is the first skill in the `memory:` toolkit — a suite of utility skills that ship with the Harness Engineering methodology.
@@ -18,7 +20,7 @@ The `memory:` toolkit is a set of independent, self-contained skills installed a
 | Skill | Purpose | Status |
 |---|---|---|
 | `memory:scan` | Quick project overview, suggest next steps | This spec |
-| `memory:seeding` | Deep analysis to generate memory files | Future |
+| `memory:analyze` | Deep analysis to generate memory files | Future |
 | `memory:extract` | Extract knowledge from requirements docs | Future |
 | `memory:interview` | Interactive Q&A to fill knowledge gaps | Future |
 
@@ -66,7 +68,7 @@ User runs /memory:scan
                                             ▼
                                    "Source detected:
                                     [brief summary].
-                                    Run memory:seeding
+                                    Run memory:analyze
                                     to generate memory
                                     from your codebase."
 ```
@@ -161,7 +163,7 @@ The skill outputs a short report directly in the conversation:
 
 ## Suggested Next Step
 
-Run `memory:seeding` — it will deep-analyze your existing source code
+Run `memory:analyze` — it will deep-analyze your existing source code
 to generate an initial knowledge base for the technical, domain, and
 rules memory stores.
 ```
@@ -176,7 +178,7 @@ For empty projects:
 
 ## Suggested Next Step
 
-This appears to be a new project. Run `memory:seeding` with your
+This appears to be a new project. Run `memory:analyze` with your
 requirements documents (SRS, PRD, user stories) to generate an
 initial knowledge base.
 ```

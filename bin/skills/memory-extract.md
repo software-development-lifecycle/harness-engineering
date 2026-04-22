@@ -267,7 +267,7 @@ This skill:
 - Can be run repeatedly as new documents arrive
 
 This skill does NOT:
-- Analyze source code (use memory:seeding for that)
+- Analyze source code (use memory:analyze for that)
 - Follow a rigid document-type classification
 - Write files without user approval
 - Make decisions without asking

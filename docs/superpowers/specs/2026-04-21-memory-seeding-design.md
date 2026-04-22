@@ -1,5 +1,7 @@
 # memory:seeding — Design Spec
 
+> **SUPERSEDED:** This design has been replaced by [Memory Skills Redesign](../../memory-plan/2026-04-22-memory-skills-redesign-spec.md). The `memory:seeding` skill has been split into `memory:analyze` + `memory:building`.
+
 ## Overview
 
 `memory:seeding` is the core skill in the `memory:` toolkit. It deep-analyzes the project — from existing source code or requirements documents — and generates an initial set of high-quality memory files through an interactive, user-guided process.

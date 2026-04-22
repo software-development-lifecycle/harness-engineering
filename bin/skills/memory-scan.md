@@ -103,7 +103,7 @@ Present the scan results to the user using this format:
 
 ## Suggested Next Step
 
-Run `memory:seeding` — it will deep-analyze your existing source code
+Run `memory:analyze` — it will deep-analyze your existing source code
 to generate an initial knowledge base for the technical, domain, and
 rules memory stores.
 ```
@@ -118,7 +118,7 @@ rules memory stores.
 
 ## Suggested Next Step
 
-This appears to be a new project. Run `memory:seeding` with your
+This appears to be a new project. Run `memory:analyze` with your
 requirements documents (SRS, PRD, user stories) to generate an
 initial knowledge base.
 ```
@@ -131,7 +131,7 @@ If registries already have entries, adjust the suggestion:
 ## Suggested Next Step
 
 Your knowledge base already has content. Options:
-- Run `memory:seeding` to add more memory files
+- Run `memory:analyze` to add more memory files
 - Run `memory:interview` to capture tribal knowledge
 - Run `memory:extract` if you have new requirements documents
 ```

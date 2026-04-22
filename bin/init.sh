@@ -74,8 +74,9 @@ if [[ "$DRY_RUN" == true ]]; then
   echo "  memory/rules/_registry.yaml"
   echo "  .claude/commands/"
   echo "  .claude/commands/memory-scan.md"
-  echo "  .claude/commands/memory-seeding.md"
-  echo "  .claude/commands/memory-seeding-knowledge/"
+  echo "  .claude/commands/memory-analyze.md"
+  echo "  .claude/commands/memory-building.md"
+  echo "  .claude/commands/memory-building-knowledge/"
   echo "  .claude/commands/memory-extract.md"
   echo "  .claude/commands/memory-interview.md"
   exit 0

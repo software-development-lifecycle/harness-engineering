@@ -11,7 +11,8 @@ The Memory Toolkit is a set of AI-powered skills that automate the creation and 
 | Skill | Command | Input | Output |
 |---|---|---|---|
 | [Scan](#memoryscan) | `/memory:scan` | Project directory | Status report + recommendations |
-| [Seeding](#memoryseeding) | `/memory:seeding` | Source code or requirements docs | 3-5 memory files + registry entries |
+| [Analyze](#memoryanalyze) | `/memory:analyze` | Source code or requirements docs | Analysis spec + building plan |
+| [Building](#memorybuilding) | `/memory:building` | Approved plan | Memory files + registry entries |
 | [Extract](#memoryextract) | `/memory:extract` | Any document (file, URL, paste) | Memory files per extracted topic |
 | [Interview](#memoryinterview) | `/memory:interview` | Conversational Q&A | Memory files from tribal knowledge |
 
@@ -33,7 +34,7 @@ This copies skill files from `bin/skills/` into your project's `.claude/commands
 
 ```bash
 cp bin/skills/*.md /path/to/your-project/.claude/commands/
-cp -r bin/skills/memory-seeding-knowledge/ /path/to/your-project/.claude/commands/
+cp -r bin/skills/memory-building-knowledge/ /path/to/your-project/.claude/commands/
 ```
 
 ---
@@ -53,20 +54,21 @@ memory:scan → memory:extract (from requirements docs) → memory:interview
 ### Existing project (has source code)
 
 ```
-memory:scan → memory:seeding (from source) → memory:extract → memory:interview
+memory:scan → memory:analyze → memory:building → memory:extract → memory:interview
 ```
 
 1. Run `/memory:scan` to assess the project state and detect the tech stack
-2. Run `/memory:seeding` in source-based mode to generate memory files from code analysis
-3. Run `/memory:extract` with any supplementary documents (API specs, architecture docs)
-4. Run `/memory:interview` to fill gaps — especially for tribal knowledge and unwritten conventions
+2. Run `/memory:analyze` to interactively analyze the project, decompose into topics, and produce a spec + plan
+3. Run `/memory:building` to execute the approved plan and build the memory files
+4. Run `/memory:extract` with any supplementary documents (API specs, architecture docs)
+5. Run `/memory:interview` to fill gaps — especially for tribal knowledge and unwritten conventions
 
 ### Ongoing maintenance
 
 As the project evolves, run skills again to keep the knowledge base current:
 
 - **New documents arrive** → `/memory:extract`
-- **Codebase changed significantly** → `/memory:seeding`
+- **Codebase changed significantly** → `/memory:analyze` + `/memory:building`
 - **New team member's expertise to capture** → `/memory:interview`
 - **Periodic health check** → `/memory:scan`
 
@@ -107,16 +109,16 @@ Project shape: REST API with PostgreSQL, deployed via Docker
 
 ## Suggested Next Step
 
-Run memory:seeding — it will deep-analyze your existing source code
+Run memory:analyze — it will deep-analyze your existing source code
 to generate an initial knowledge base for the technical, domain, and
 rules memory stores.
 ```
 
 ---
 
-### memory:seeding
+### memory:analyze
 
-**Purpose:** Deep-analyze source code or requirements documents to generate an initial batch of memory files.
+**Purpose:** Interactively analyze a project's source code or requirements documents to produce a spec and plan for memory file creation, with SRP enforcement at every stage.
 
 **When to use:**
 - Bootstrapping a knowledge base for an existing codebase
@@ -125,11 +127,12 @@ rules memory stores.
 
 **What it does:**
 1. Asks you to choose source-based or document-based mode
-2. Analyzes source code (reads config files, samples key source files) or reads provided documents
-3. Identifies knowledge topics and categorizes them into the three stores
-4. Presents a topic list for your approval
-5. Drafts each memory file one at a time for your review
-6. Writes approved files and updates registries
+2. Analyzes source code or reads provided documents to identify knowledge topics
+3. Proposes topics with SRP enforcement — proactively splits any topic that covers multiple concerns
+4. Deep-dives each topic through thorough Q&A (one question at a time) to nail down scope, content, and boundaries
+5. Writes an analysis spec for your review (`docs/memory-plan/`)
+6. Writes a building plan for your review (`docs/memory-plan/`)
+7. Hands off to `memory:building` once the plan is approved
 
 **Two modes:**
 
@@ -138,17 +141,47 @@ rules memory stores.
 | Source-based | Existing codebase | Extracting patterns, architecture, conventions from code |
 | Document-based | Requirements docs (SRS, PRD, user stories) | New projects or pre-implementation knowledge capture |
 
-**Language knowledge files:** In source-based mode, the skill loads a language-specific knowledge file (if available) to guide its analysis. These files tell the skill which files to sample, what patterns to look for, and where domain signals hide for each tech stack:
+**SRP enforcement:** The skill enforces Single Responsibility at two stages:
+1. During topic decomposition — challenges any topic that fails the "A and B" test
+2. During spec self-review — re-validates every topic before presenting to the user
 
-- `memory-seeding-knowledge/csharp.md` — C# / .NET
-- `memory-seeding-knowledge/go.md` — Go
-- `memory-seeding-knowledge/java.md` — Java
-- `memory-seeding-knowledge/nodejs.md` — Node.js / TypeScript
-- `memory-seeding-knowledge/python.md` — Python
+**No file cap:** the interactive Q&A and spec/plan approvals are the quality gates. The analysis determines the right number of topics.
 
-If no matching knowledge file exists, the skill falls back to general-purpose heuristics.
+**Artifacts produced:**
+- Analysis spec: `docs/memory-plan/YYYY-MM-DD-<project>-analysis.md`
+- Building plan: `docs/memory-plan/YYYY-MM-DD-<project>-plan.md`
 
-**Limits:** generates 3-5 memory files per run. Run the skill again to add more.
+---
+
+### memory:building
+
+**Purpose:** Execute an approved plan to build memory files with two-stage review per file.
+
+**When to use:**
+- After `memory:analyze` produces an approved plan
+- Never invoked directly without a plan — always preceded by `memory:analyze`
+
+**What it does:**
+1. Reads the approved plan from `docs/memory-plan/`
+2. For each topic in the plan, dispatches a subagent to build the memory file
+3. Runs spec compliance review (does the file match the plan?)
+4. Runs quality review (is it AI-readable, specific, SRP-compliant?)
+5. Fixes issues until both reviews pass
+6. After all files are built, runs a final cross-file consistency review
+
+**Language knowledge files:** The building skill loads language-specific knowledge files to guide its writing for each tech stack:
+
+- `memory-building-knowledge/csharp.md` — C# / .NET
+- `memory-building-knowledge/go.md` — Go
+- `memory-building-knowledge/java.md` — Java
+- `memory-building-knowledge/nodejs.md` — Node.js / TypeScript
+- `memory-building-knowledge/python.md` — Python
+
+If no matching knowledge file exists, the skill proceeds with general guidance from the plan.
+
+**Two-stage review per file:**
+1. **Spec compliance:** Does the file match the plan? Correct scope, store, SRP-compliant, good registry entry?
+2. **Quality:** AI-readable, specific language, DO/DON'T examples, concise, correct template?
 
 ---
 
@@ -171,7 +204,7 @@ If no matching knowledge file exists, the skill falls back to general-purpose he
 
 **Accepts any document format:** markdown, PDF, Word, plain text, pasted content, URLs. The skill adapts its extraction to whatever content you provide.
 
-**Difference from seeding:** Seeding analyzes source code to reverse-engineer knowledge. Extract reads documents that already describe the knowledge explicitly. Use seeding for code, extract for docs.
+**Difference from analyze:** Analyze interactively decomposes source code or docs into SRP-compliant topics with deep Q&A and produces a spec + plan. Extract reads documents that already describe the knowledge explicitly and writes files directly. Use analyze for structured project analysis, extract for ad-hoc document intake.
 
 ---
 
@@ -183,7 +216,7 @@ If no matching knowledge file exists, the skill falls back to general-purpose he
 - Onboarding and you want to capture a senior developer's knowledge
 - Business rules exist only as institutional knowledge
 - The team learned lessons that should be preserved
-- Filling gaps after seeding and extraction
+- Filling gaps after analysis and extraction
 
 **What it does:**
 1. Asks you to choose a focus area (Technical, Domain, Rules, or help me decide)
@@ -206,15 +239,14 @@ Each skill fills a different niche in the knowledge capture pipeline:
 
 | Knowledge source | Skill to use |
 |---|---|
-| Existing source code | `memory:seeding` (source-based mode) |
-| Requirements documents, specs, PRDs | `memory:seeding` (document-based mode) or `memory:extract` |
+| Existing source code | `memory:analyze` → `memory:building` |
+| Requirements documents, specs, PRDs | `memory:analyze` → `memory:building` (from docs) or `memory:extract` |
 | Ongoing document intake | `memory:extract` |
 | Team expertise, unwritten conventions | `memory:interview` |
 | "Where do I start?" | `memory:scan` |
 
 The skills are designed to be **composable and repeatable**:
 - Run any skill multiple times as the project grows
-- Each run generates 3-5 files — multiple runs build comprehensive coverage
 - Skills read existing registries to avoid duplicating topics already covered
 
 ---
@@ -225,8 +257,8 @@ The skills are designed to be **composable and repeatable**:
 
 ```
 /memory:scan                    # Assess the project
-/memory:seeding                 # Choose source-based mode, deep scan
-/memory:seeding                 # Run again for additional topics
+/memory:analyze                 # Interactive analysis, produces spec + plan
+/memory:building                # Build memory files from approved plan
 /memory:interview               # Fill in team conventions and business rules
 ```
 
@@ -252,7 +284,7 @@ The skills are designed to be **composable and repeatable**:
 
 - **Start with scan.** It takes seconds and tells you exactly what to do next.
 - **One skill at a time.** Each skill is a focused session. Don't try to do everything in one conversation.
-- **Review carefully.** Skills draft files for your approval — take the time to correct inaccuracies before writing.
+- **Review carefully.** Skills produce specs and plans for your approval — take the time to correct inaccuracies before proceeding.
 - **Run skills again.** They read existing registries and focus on gaps. Multiple runs build better coverage than one marathon session.
-- **Seeding vs. extract:** If you have code, start with seeding. If you have documents, start with extract. Both produce the same output format.
-- **Interview last.** After seeding and extraction, the interview skill can identify exactly what's missing and focus its questions on gaps.
+- **Analyze vs. extract:** If you have code, start with analyze. If you have standalone documents, start with extract. Analyze produces a spec + plan; extract writes files directly.
+- **Interview last.** After analysis and extraction, the interview skill can identify exactly what's missing and focus its questions on gaps.
