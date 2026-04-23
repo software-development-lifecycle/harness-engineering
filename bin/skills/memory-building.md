@@ -20,16 +20,14 @@ Extract:
 
 ## Knowledge Files
 
-Located at `memory-building-knowledge/` (relative to this skill's directory):
-- `java.md` — Java / Spring Boot / Kotlin
-- `nodejs.md` — Node.js / TypeScript
-- `python.md` — Python / Django / FastAPI
-- `csharp.md` — C# / .NET
-- `go.md` — Go
+Located at `memory-building-knowledge/` (relative to this skill's directory).
 
-Detect the tech stack from the plan's **Tech Stack** field. Read the matching knowledge file using the Read tool. Use it as guidance when writing files for that tech stack.
-
-If no matching knowledge file exists, proceed with general analysis using the plan's content outline and the template formats from the plan.
+To find the matching knowledge file:
+1. Read the **Tech Stack** field from the plan
+2. List files in `memory-building-knowledge/` directory
+3. Match tech stack keywords to file names by convention (e.g. "Kotlin" → `kotlin.md`, "Java" → `java.md`, "Node.js" → `nodejs.md`, "C#" → `csharp.md`)
+4. If a matching file exists, read it and use as guidance when writing memory files for that tech stack
+5. If no matching file exists, proceed with general analysis using the plan's content outline and the template formats from the plan
 
 ## Per-Topic Execution Cycle
 
