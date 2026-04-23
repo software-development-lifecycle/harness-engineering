@@ -263,7 +263,6 @@ Write the building plan to `docs/memory-plan/YYYY-MM-DD-<project>-plan.md`:
 **File:** `memory/[store]/[path].md`
 **Store:** [technical/domain/rules]
 **Template:** [technical/domain/rules]
-**Knowledge file:** `memory-building-knowledge/[lang].md` or "none"
 
 **Content outline:**
 - [Section]: [content from Q&A]
@@ -287,7 +286,7 @@ Write the building plan to `docs/memory-plan/YYYY-MM-DD-<project>-plan.md`:
 1. Every topic in the spec has a corresponding task
 2. File paths are valid and consistent
 3. Registry entries have unique IDs within each store
-4. Knowledge file references match the tech stack
+4. Tech Stack field is present and matches what was confirmed with the user
 5. No task duplicates or overlaps
 
 **Step 13: User reviews plan**
