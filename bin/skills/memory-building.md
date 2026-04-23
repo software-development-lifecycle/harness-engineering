@@ -21,7 +21,8 @@ Extract:
 ## Knowledge Files
 
 Located at `memory-building-knowledge/` (relative to this skill's directory):
-- `java.md` — Java / Spring Boot / Kotlin
+- `java.md` — Java / Spring Boot
+- `kotlin.md` — Kotlin / Android / Jetpack Compose
 - `nodejs.md` — Node.js / TypeScript
 - `python.md` — Python / Django / FastAPI
 - `csharp.md` — C# / .NET
