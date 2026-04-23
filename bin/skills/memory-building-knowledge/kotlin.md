@@ -1,4 +1,4 @@
-# Kotlin Android Knowledge
+# Kotlin / Android Knowledge
 
 ## Project Structure
 - `build.gradle.kts` (root) — project-level plugins, repositories, version catalogs
