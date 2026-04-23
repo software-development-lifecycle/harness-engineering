@@ -84,6 +84,7 @@ The building skill ships with built-in knowledge for common tech stacks, enablin
 | C# / .NET | `memory-building-knowledge/csharp.md` |
 | Go | `memory-building-knowledge/go.md` |
 | Java | `memory-building-knowledge/java.md` |
+| Kotlin / Android | `memory-building-knowledge/kotlin.md` |
 | Node.js / TypeScript | `memory-building-knowledge/nodejs.md` |
 | Python | `memory-building-knowledge/python.md` |
 
@@ -108,6 +109,7 @@ harness-engineering/
 │           ├── csharp.md
 │           ├── go.md
 │           ├── java.md
+│           ├── kotlin.md
 │           ├── nodejs.md
 │           └── python.md
 ├── docs/
