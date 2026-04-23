@@ -36,7 +36,7 @@ For each task in the plan:
 ### Step 1: Prepare context
 
 - Read the task from the plan (topic scope, boundaries, content outline)
-- Load matching knowledge file if the topic's tech stack has one
+- Load the knowledge file identified in the Knowledge Files section (if one was matched)
 - Read the target store's `_registry.yaml` to understand existing entries
 
 ### Step 2: Dispatch implementer subagent
