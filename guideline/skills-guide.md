@@ -175,6 +175,7 @@ rules memory stores.
 - `memory-building-knowledge/csharp.md` — C# / .NET
 - `memory-building-knowledge/go.md` — Go
 - `memory-building-knowledge/java.md` — Java
+- `memory-building-knowledge/kotlin.md` — Kotlin / Android
 - `memory-building-knowledge/nodejs.md` — Node.js / TypeScript
 - `memory-building-knowledge/python.md` — Python
 
