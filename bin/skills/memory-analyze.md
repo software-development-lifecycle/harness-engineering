@@ -53,9 +53,16 @@ If the project has source code, recommend option A. If empty, recommend option B
 
 **For source-based mode:**
 
-1. Detect the tech stack by reading manifest/config files (package.json, go.mod, *.csproj, pom.xml, build.gradle, requirements.txt, pyproject.toml, etc.)
-2. Sample key files following priority order: entry point, one controller/handler, one service, one model, configuration files
-3. Identify:
+1. Detect the tech stack by reading manifest/config files (package.json, go.mod, *.csproj, pom.xml, build.gradle, build.gradle.kts, requirements.txt, pyproject.toml, etc.)
+2. Confirm the detected tech stack with the user:
+
+> I detected the following tech stack: **[tech stack]**
+> Is this correct? Anything to add or change?
+
+Wait for user confirmation. Update the tech stack based on user feedback.
+
+3. Sample key files following priority order: entry point, one controller/handler, one service, one model, configuration files
+4. Identify:
    - Architecture patterns (layered, hexagonal, CQRS, microservices, etc.)
    - Domain entities and business logic
    - Coding conventions and constraints
@@ -83,12 +90,25 @@ Read the provided documents and extract knowledge using these heuristics:
 - Compliance, security, legal requirements
 - Standards, conventions, quality attributes
 
+**Tech stack resolution:** After reading the documents, resolve the project's tech stack:
+
+1. If technology names were found in the documents, propose them for confirmation:
+
+> I noticed mentions of **[tech list]** in the documents. Is this the project's tech stack?
+
+2. If no technology names were found, ask directly:
+
+> What is the project's tech stack? (languages, frameworks, key libraries)
+
+Wait for user confirmation before proceeding.
+
 **Step 4: Present findings**
 
 Present a structured summary to the user:
 
 > Here's what I found:
 >
+> **Tech Stack:** [confirmed tech stack from Step 3]
 > **Technical:** [list of technical patterns/components discovered]
 > **Domain:** [list of domain concepts discovered]
 > **Rules:** [list of constraints discovered]
