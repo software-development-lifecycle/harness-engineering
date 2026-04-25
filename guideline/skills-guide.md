@@ -11,10 +11,8 @@ The Memory Toolkit is a set of AI-powered skills that automate the creation and 
 | Skill | Command | Input | Output |
 |---|---|---|---|
 | [Scan](#memoryscan) | `/memory:scan` | Project directory | Status report + recommendations |
-| [Analyze](#memoryanalyze) | `/memory:analyze` | Source code or requirements docs | Analysis spec + building plan |
+| [Analyze](#memoryanalyze) | `/memory:analyze` | Source code, requirements docs, or conversation | Analysis spec + building plan |
 | [Building](#memorybuilding) | `/memory:building` | Approved plan | Memory files + registry entries |
-| [Extract](#memoryextract) | `/memory:extract` | Any document (file, URL, paste) | Memory files per extracted topic |
-| [Interview](#memoryinterview) | `/memory:interview` | Conversational Q&A | Memory files from tribal knowledge |
 | [Check for Updates](#check-for-updates) | `/check-for-updates` | `memory/.harness-version` | Updated skill files |
 
 All skills are **interactive** — they propose, you review, they write. Nothing is created without your approval.
@@ -45,32 +43,33 @@ cp -r bin/skills/memory-building-knowledge/ /path/to/your-project/.claude/comman
 ### New project (no source code yet)
 
 ```
-memory:scan → memory:extract (from requirements docs) → memory:interview
+memory:scan → memory:analyze (document or interview mode) → memory:building
 ```
 
 1. Run `/memory:scan` to confirm the memory structure is initialized
-2. Run `/memory:extract` with your requirements documents (SRS, PRD, user stories) to generate initial memory files
-3. Run `/memory:interview` to capture domain expertise and team conventions not covered in documents
+2. Run `/memory:analyze` in document mode with your requirements documents (SRS, PRD, user stories)
+3. Run `/memory:building` to build memory files from the approved plan
+4. Run `/memory:analyze` in interview mode to capture domain expertise and team conventions not covered in documents
 
 ### Existing project (has source code)
 
 ```
-memory:scan → memory:analyze → memory:building → memory:extract → memory:interview
+memory:scan → memory:analyze → memory:building
 ```
 
 1. Run `/memory:scan` to assess the project state and detect the tech stack
 2. Run `/memory:analyze` to interactively analyze the project, decompose into topics, and produce a spec + plan
 3. Run `/memory:building` to execute the approved plan and build the memory files
-4. Run `/memory:extract` with any supplementary documents (API specs, architecture docs)
-5. Run `/memory:interview` to fill gaps — especially for tribal knowledge and unwritten conventions
+4. Run `/memory:analyze` again in document mode with any supplementary documents (API specs, architecture docs)
+5. Run `/memory:analyze` in interview mode to fill gaps — especially for tribal knowledge and unwritten conventions
 
 ### Ongoing maintenance
 
 As the project evolves, run skills again to keep the knowledge base current:
 
-- **New documents arrive** → `/memory:extract`
-- **Codebase changed significantly** → `/memory:analyze` + `/memory:building`
-- **New team member's expertise to capture** → `/memory:interview`
+- **New documents arrive** → `/memory:analyze` (document mode)
+- **Codebase changed significantly** → `/memory:analyze` (source mode)
+- **New team member's expertise to capture** → `/memory:analyze` (interview mode)
 - **Periodic health check** → `/memory:scan`
 
 ---
@@ -119,28 +118,37 @@ rules memory stores.
 
 ### memory:analyze
 
-**Purpose:** Interactively analyze a project's source code or requirements documents to produce a spec and plan for memory file creation, with SRP enforcement at every stage.
+**Purpose:** Interactively analyze a project's source code, requirements documents, or tribal knowledge to produce a spec and plan for memory file creation, with SRP enforcement at every stage.
 
 **When to use:**
 - Bootstrapping a knowledge base for an existing codebase
 - Starting a new project with requirements documents but no code yet
+- Capturing tribal knowledge — expertise that lives in people's heads
 - Adding coverage after a major architectural change
+- Ongoing document intake as new specs or requirements arrive
 
 **What it does:**
-1. Asks you to choose source-based or document-based mode
-2. Analyzes source code or reads provided documents to identify knowledge topics
+1. Asks you to choose source-based, document-based, or interview mode
+2. Analyzes source code, reads provided documents, or conducts structured Q&A to identify knowledge topics
 3. Proposes topics with SRP enforcement — proactively splits any topic that covers multiple concerns
 4. Deep-dives each topic through thorough Q&A (one question at a time) to nail down scope, content, and boundaries
 5. Writes an analysis spec for your review (`docs/memory-plan/`)
 6. Writes a building plan for your review (`docs/memory-plan/`)
 7. Hands off to `memory:building` once the plan is approved
 
-**Two modes:**
+**Three modes:**
 
 | Mode | Input | Best for |
 |---|---|---|
 | Source-based | Existing codebase | Extracting patterns, architecture, conventions from code |
-| Document-based | Requirements docs (SRS, PRD, user stories) | New projects or pre-implementation knowledge capture |
+| Document-based | Requirements docs (SRS, PRD, API specs, any document) | New projects, pre-implementation knowledge, ongoing document intake |
+| Interview | Conversation (no artifacts needed) | Tribal knowledge, team expertise, unwritten conventions |
+
+**Interview mode features:**
+- Built-in question bank with 30 starter questions (10 per store) — adapts dynamically based on answers
+- Gap detection — reads existing registries and focuses on thin areas
+- Periodic checkpoints every 3-4 answers to validate accuracy
+- All captured knowledge flows through the same SRP-enforced pipeline as other modes
 
 **SRP enforcement:** The skill enforces Single Responsibility at two stages:
 1. During topic decomposition — challenges any topic that fails the "A and B" test
@@ -187,54 +195,6 @@ If no matching knowledge file exists, the skill proceeds with general guidance f
 
 ---
 
-### memory:extract
-
-**Purpose:** Extract knowledge from any document into properly formatted memory files.
-
-**When to use:**
-- You received new requirements documents, API specs, or architecture docs
-- You have meeting notes, design documents, or compliance checklists to capture
-- Ongoing document intake as the project evolves
-
-**What it does:**
-1. Asks you to provide documents (file path, paste, or URL)
-2. Reads and analyzes documents using extraction heuristics
-3. Identifies knowledge items and categorizes them (Technical, Domain, Rules)
-4. Presents findings for your review
-5. Drafts each memory file one at a time
-6. Writes approved files and updates registries
-
-**Accepts any document format:** markdown, PDF, Word, plain text, pasted content, URLs. The skill adapts its extraction to whatever content you provide.
-
-**Difference from analyze:** Analyze interactively decomposes source code or docs into SRP-compliant topics with deep Q&A and produces a spec + plan. Extract reads documents that already describe the knowledge explicitly and writes files directly. Use analyze for structured project analysis, extract for ad-hoc document intake.
-
----
-
-### memory:interview
-
-**Purpose:** Capture tribal knowledge — expertise that lives in people's heads but isn't written down anywhere.
-
-**When to use:**
-- Onboarding and you want to capture a senior developer's knowledge
-- Business rules exist only as institutional knowledge
-- The team learned lessons that should be preserved
-- Filling gaps after analysis and extraction
-
-**What it does:**
-1. Asks you to choose a focus area (Technical, Domain, Rules, or help me decide)
-2. Reads existing registries to identify gaps
-3. Conducts a structured Q&A, one question at a time, adapting follow-ups based on your answers
-4. Periodically summarizes what it has gathered for your validation
-5. Recommends memory files based on the conversation
-6. Drafts each file, transforming conversational answers into structured AI-readable format
-7. Writes approved files and updates registries
-
-**Built-in question bank:** The skill has starter questions for each store type and adapts dynamically based on your answers. Short answers get follow-up probes; mentions of technologies, workflows, or incidents trigger deeper exploration.
-
-**Difference from extract:** Extract reads existing documents. Interview creates knowledge from scratch through conversation. Use extract when the knowledge is already written; use interview when it's only in someone's head.
-
----
-
 ### check-for-updates
 
 **Purpose:** Check for new Harness Engineering releases on GitHub and update the installed skills.
@@ -269,10 +229,10 @@ Each skill fills a different niche in the knowledge capture pipeline:
 
 | Knowledge source | Skill to use |
 |---|---|
-| Existing source code | `memory:analyze` → `memory:building` |
-| Requirements documents, specs, PRDs | `memory:analyze` → `memory:building` (from docs) or `memory:extract` |
-| Ongoing document intake | `memory:extract` |
-| Team expertise, unwritten conventions | `memory:interview` |
+| Existing source code | `memory:analyze` (source mode) → `memory:building` |
+| Requirements documents, specs, PRDs | `memory:analyze` (document mode) → `memory:building` |
+| Ongoing document intake | `memory:analyze` (document mode) → `memory:building` |
+| Team expertise, unwritten conventions | `memory:analyze` (interview mode) → `memory:building` |
 | "Where do I start?" | `memory:scan` |
 
 The skills are designed to be **composable and repeatable**:
@@ -287,25 +247,26 @@ The skills are designed to be **composable and repeatable**:
 
 ```
 /memory:scan                    # Assess the project
-/memory:analyze                 # Interactive analysis, produces spec + plan
+/memory:analyze                 # Source mode — interactive analysis, produces spec + plan
 /memory:building                # Build memory files from approved plan
-/memory:interview               # Fill in team conventions and business rules
+/memory:analyze                 # Interview mode — fill in team conventions and business rules
 ```
 
 ### Start a new project from specs
 
 ```
 /memory:scan                    # Confirm structure is initialized
-/memory:extract                 # Feed in the SRS/PRD
-/memory:extract                 # Feed in API specs, architecture docs
-/memory:interview               # Capture team decisions and constraints
+/memory:analyze                 # Document mode — feed in the SRS/PRD, API specs, architecture docs
+/memory:building                # Build memory files from approved plan
+/memory:analyze                 # Interview mode — capture team decisions and constraints
 ```
 
 ### Onboard a new team member
 
 ```
 /memory:scan                    # Show them the knowledge base state
-/memory:interview               # Interview the departing/senior developer
+/memory:analyze                 # Interview mode — interview the departing/senior developer
+/memory:building                # Build memory files from approved plan
 ```
 
 ---
@@ -316,5 +277,5 @@ The skills are designed to be **composable and repeatable**:
 - **One skill at a time.** Each skill is a focused session. Don't try to do everything in one conversation.
 - **Review carefully.** Skills produce specs and plans for your approval — take the time to correct inaccuracies before proceeding.
 - **Run skills again.** They read existing registries and focus on gaps. Multiple runs build better coverage than one marathon session.
-- **Analyze vs. extract:** If you have code, start with analyze. If you have standalone documents, start with extract. Analyze produces a spec + plan; extract writes files directly.
-- **Interview last.** After analysis and extraction, the interview skill can identify exactly what's missing and focus its questions on gaps.
+- **Pick the right mode:** Source mode for code, document mode for specs/requirements, interview mode for tribal knowledge.
+- **Interview mode last.** After source or document analysis, interview mode can identify exactly what's missing and focus its questions on gaps.
