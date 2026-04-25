@@ -1,11 +1,11 @@
 ---
 name: memory:analyze
-description: Interactively analyze project source or requirements docs — deep Q&A, SRP-enforced topic decomposition, spec and plan generation for memory file creation
+description: Interactively analyze project source, requirements docs, or conversational knowledge — deep Q&A, SRP-enforced topic decomposition, spec and plan generation for memory file creation
 ---
 
 # memory:analyze
 
-Interactively analyze a project's source code or requirements documents to produce a spec and plan for memory file creation. Enforces Single Responsibility Principle at every stage through deep Q&A.
+Interactively analyze a project's source code, requirements documents, or tribal knowledge (via interview) to produce a spec and plan for memory file creation. Enforces Single Responsibility Principle at every stage through deep Q&A.
 
 ## Interaction Discipline
 
@@ -27,8 +27,9 @@ Ask the user:
 >
 > - **A) Source-based** — I'll deep-analyze the existing codebase
 > - **B) Document-based** — You provide requirements documents (SRS, PRD, user stories, etc.) and I'll extract knowledge from them
+> - **C) Interview** — I'll capture knowledge through conversation (no documents needed)
 
-If the project has source code, recommend option A. If empty, recommend option B.
+If the project has source code, recommend option A. If empty and the user has documents, recommend option B. If the user wants to capture tribal knowledge or has no artifacts, recommend option C.
 
 **Step 2 (source mode): Confirm scan depth**
 
@@ -46,6 +47,30 @@ If the project has source code, recommend option A. If empty, recommend option B
 > - **URL** — link to external docs (Confluence, Google Docs, etc.)
 >
 > You can provide multiple sources.
+
+**Step 2 (interview mode): Choose focus area and detect gaps**
+
+Ask the user:
+
+> What area would you like to capture knowledge about?
+>
+> - **A) Technical** — how things are built (languages, frameworks, patterns, infrastructure)
+> - **B) Domain** — what the business does (workflows, entities, business rules, terminology)
+> - **C) Rules** — constraints and conventions (coding standards, security, API design)
+> - **D) Not sure** — help me figure out what's missing
+
+Read the relevant `_registry.yaml` file(s):
+- If user chose A/B/C: read that store's registry
+- If user chose D: read all three registries
+
+Report existing coverage and identify gaps using the gap detection logic (see Embedded Knowledge section):
+
+> I see your [store] registry currently has [N entries / is empty]:
+> [list existing entries if any]
+>
+> I'll focus on gaps. Let's start.
+
+If user chose D and all registries are thin, suggest starting with the thinnest store.
 
 ### Phase 2: Analysis
 
@@ -116,6 +141,54 @@ Present a structured summary to the user:
 > Does this look accurate? Anything to correct or add?
 
 Wait for user confirmation before proceeding.
+
+**Step 3 (interview mode): Structured Q&A**
+
+Ask questions one at a time from the embedded question bank (see Embedded Knowledge). Start with the most fundamental question for the chosen store, then adapt follow-ups based on answers.
+
+**Adaptive follow-up rules:**
+- **Short answer** → ask for more detail: "Can you elaborate on [specific part]?"
+- **Mentions a technology** → dig into usage: "How does the team use [tech]? Any specific patterns or conventions?"
+- **Mentions a problem or incident** → extract the rule: "What rule would prevent that? What should the team always/never do?"
+- **Mentions a workflow** → map the states: "What are the steps? What triggers each transition?"
+- **Says "I don't know"** → move on: "No problem. Let's move to [next topic]."
+
+**Step 4 (interview mode): Periodic checkpoints**
+
+Every 3-4 answers, pause and summarize:
+
+> So far I've gathered:
+>
+> - **[topic A]** — [brief summary of what was learned]
+> - **[topic B]** — [brief summary of what was learned]
+>
+> Is this accurate? Anything to correct?
+
+Wait for user confirmation before continuing.
+
+**Step 5 (interview mode): Stop and present findings**
+
+Stop the interview when:
+- User says "that's enough", "let's stop", or similar
+- You have gathered enough material for 3-5 topics
+- You run out of productive questions for the chosen area
+
+Present findings in the same format as source/document modes:
+
+> Here's what I found:
+>
+> **Tech Stack:** [confirmed tech stack, or ask if not yet established]
+> **Technical:** [list of technical patterns/components discovered]
+> **Domain:** [list of domain concepts discovered]
+> **Rules:** [list of constraints discovered]
+>
+> Does this look accurate? Anything to correct or add?
+
+**Tech stack resolution (interview mode):** If the tech stack has not been established during Q&A:
+
+> What is the project's tech stack? (languages, frameworks, key libraries)
+
+Wait for user confirmation, then proceed to Phase 3 (Topic Decomposition).
 
 ### Phase 3: Topic Decomposition
 
@@ -407,6 +480,58 @@ last_updated: [YYYY-MM-DD]
     desc: "[short description]"
 ```
 
+### Question Bank
+
+Starter questions per store. Pick from these based on context, then adapt follow-ups based on answers. These are conversation starters, not a rigid script. Used only in interview mode.
+
+**Technical questions:**
+- What languages and frameworks does this project use?
+- What's the architecture pattern? (monolith, microservices, serverless, modular monolith)
+- How is data stored? What databases or data services?
+- What are the key integration points with external systems?
+- How is authentication and authorization handled?
+- What's the deployment setup? (containers, cloud provider, CI/CD pipeline)
+- Are there any performance-critical paths or known bottlenecks?
+- What patterns does the team use most? (repository, CQRS, event sourcing, saga, etc.)
+- What testing approach does the team follow? (unit, integration, e2e, contract)
+- Are there technologies the team is planning to adopt or migrate away from?
+
+**Domain questions:**
+- What does this product or system do in one sentence?
+- Who are the main users or actors?
+- What are the core workflows or processes?
+- What business rules do people get wrong most often?
+- What domain terminology would a new team member need to learn first?
+- What are the key entities and how do they relate to each other?
+- Are there state machines or lifecycles? (e.g., order states, user account states)
+- What edge cases or special scenarios come up frequently?
+- Are there seasonal or time-dependent business rules?
+- What changed recently in the business domain?
+
+**Rules questions:**
+- Are there coding conventions the team follows? (naming, formatting, file structure)
+- What security requirements exist? (authentication, data protection, encryption)
+- Are there API design standards? (REST conventions, response format, versioning)
+- What are the "never do this" rules the team learned the hard way?
+- Are there compliance or regulatory requirements? (GDPR, HIPAA, PCI-DSS, etc.)
+- How does the team handle errors and logging?
+- Are there performance standards or SLAs?
+- What code review standards does the team follow?
+- Are there restrictions on third-party dependencies?
+- What conventions exist for database schema changes?
+
+### Gap Detection Logic
+
+Used in interview mode to identify what's missing from existing registries:
+
+| Existing coverage | Gap signal | Action |
+|---|---|---|
+| Technical store has no auth entry | Auth knowledge missing | Ask auth questions |
+| Domain store has entities but no workflows | Workflow knowledge missing | Ask workflow questions |
+| Rules registry is empty | No constraints captured | Start with rules questions |
+| All stores have entries | Check for depth gaps | Ask about edge cases, recent changes |
+| One store much thinner than others | Imbalanced knowledge | Suggest focusing on thin store |
+
 ### Quality Criteria
 
 Every memory file MUST be:
@@ -420,7 +545,7 @@ Every memory file MUST be:
 ## Scope
 
 This skill:
-- Analyzes source code OR requirements documents (not both in one run)
+- Analyzes source code, requirements documents, or conversational knowledge (one mode per run)
 - Enforces SRP at every stage (Q&A challenge + spec self-review)
 - Produces a spec and plan as persistent artifacts in `docs/memory-plan/`
 - Always asks the user before writing anything
