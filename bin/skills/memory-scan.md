@@ -131,9 +131,9 @@ If registries already have entries, adjust the suggestion:
 ## Suggested Next Step
 
 Your knowledge base already has content. Options:
-- Run `memory:analyze` to add more memory files
-- Run `memory:interview` to capture tribal knowledge
-- Run `memory:extract` if you have new requirements documents
+- Run `memory:analyze` (source mode) to analyze code changes
+- Run `memory:analyze` (document mode) to add knowledge from new documents
+- Run `memory:analyze` (interview mode) to capture tribal knowledge
 ```
 
 ## Scope
