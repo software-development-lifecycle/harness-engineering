@@ -68,11 +68,15 @@ Report existing coverage and identify gaps using the gap detection logic (see Em
 > I see your [store] registry currently has [N entries / is empty]:
 > [list existing entries if any]
 >
-> I'll focus on gaps. Let's start.
+> I'll focus on gaps. Ready to start?
 
 If user chose D and all registries are thin, suggest starting with the thinnest store.
 
+Wait for user confirmation before proceeding to Phase 2.
+
 ### Phase 2: Analysis
+
+Proceed to the section below that matches the selected mode.
 
 **Step 3: Run analysis**
 
@@ -153,9 +157,7 @@ Ask questions one at a time from the embedded question bank (see Embedded Knowle
 - **Mentions a workflow** → map the states: "What are the steps? What triggers each transition?"
 - **Says "I don't know"** → move on: "No problem. Let's move to [next topic]."
 
-**Step 4 (interview mode): Periodic checkpoints**
-
-Every 3-4 answers, pause and summarize:
+**Periodic checkpoints:** Every 3-4 answers, pause and summarize:
 
 > So far I've gathered:
 >
@@ -166,12 +168,12 @@ Every 3-4 answers, pause and summarize:
 
 Wait for user confirmation before continuing.
 
-**Step 5 (interview mode): Stop and present findings**
-
 Stop the interview when:
 - User says "that's enough", "let's stop", or similar
 - You have gathered enough material for 3-5 topics
 - You run out of productive questions for the chosen area
+
+**Step 4 (interview mode): Present findings**
 
 Present findings in the same format as source/document modes:
 
@@ -280,7 +282,7 @@ Write the analysis spec to `docs/memory-plan/YYYY-MM-DD-<project>-analysis.md`:
 [Languages, frameworks, infrastructure]
 
 ## Analysis Mode
-[Source-based / Document-based, scan depth]
+[Source-based (light/deep) / Document-based / Interview (focus area)]
 
 ## Approved Topics
 
