@@ -9,25 +9,18 @@ const steps = [
     number: 1,
   },
   {
-    command: "memory:seeding",
-    label: "Bootstrap",
-    desc: "Deep-analyze source code or requirements docs to generate initial memory files",
+    command: "memory:analyze",
+    label: "Analyze",
+    desc: "Analyze source code, documents, or conversational knowledge — produces spec + plan",
     color: { bg: "#EEEDFE", border: "#534AB7", title: "#3C3489", text: "#534AB7" },
     number: 2,
   },
   {
-    command: "memory:extract",
-    label: "Enrich",
-    desc: "Extract knowledge from additional documents as they arrive",
+    command: "memory:building",
+    label: "Build",
+    desc: "Execute approved plan to build memory files with two-stage review",
     color: { bg: "#E1F5EE", border: "#0F6E56", title: "#085041", text: "#0F6E56" },
     number: 3,
-  },
-  {
-    command: "memory:interview",
-    label: "Fill gaps",
-    desc: "Capture tribal knowledge through structured Q&A with team members",
-    color: { bg: "#FAECE7", border: "#993C1D", title: "#712B13", text: "#993C1D" },
-    number: 4,
   },
 ];
 
@@ -136,28 +129,13 @@ export default function WorkflowDiagram() {
         </div>
       </div>
 
-      {/* Horizontal flow: scan → seeding → extract */}
-      <div style={{ display: "flex", alignItems: "stretch", marginBottom: 0 }}>
+      {/* Horizontal flow: scan → analyze → building */}
+      <div style={{ display: "flex", alignItems: "stretch" }}>
         <StepCard step={steps[0]} />
         <Arrow />
         <StepCard step={steps[1]} />
         <Arrow />
         <StepCard step={steps[2]} />
-      </div>
-
-      {/* Vertical arrow down to interview */}
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <div style={{ width: "33.33%", marginLeft: "auto" }}>
-          <Arrow vertical />
-        </div>
-      </div>
-
-      {/* Interview card — aligned right */}
-      <div style={{ display: "flex" }}>
-        <div style={{ flex: 2 }} />
-        <div style={{ flex: 1 }}>
-          <StepCard step={steps[3]} />
-        </div>
       </div>
 
       {/* Legend */}
