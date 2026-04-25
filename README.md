@@ -15,7 +15,7 @@ The core idea: an AI Model is like an exceptionally skilled developer who loses 
 - **Memory Architecture** — An external knowledge storage system organized into 3 stores: Technical, Domain, and Rules
 - **Registry-based Retrieval** — A smart memory retrieval mechanism via registry, loading only what is needed
 - **SOLID Principles for Memory** — Applying SOLID principles to the organization and management of memory
-- **Memory Toolkit Skills** — AI-powered skills that automate memory creation through scanning, analysis, building, extraction, and interviews
+- **Memory Toolkit Skills** — AI-powered skills that automate memory creation through scanning, analysis, and building
 - **Guidelines** — A comprehensive set of documents detailing how to practice the methodology
 
 ## Quick Start
@@ -57,10 +57,8 @@ The Memory Toolkit is a set of AI skills that automate the creation and maintena
 | Skill | Command | Purpose |
 |---|---|---|
 | **Scan** | `/memory:scan` | Quick project overview — checks memory state, detects tech stack, suggests next steps |
-| **Analyze** | `/memory:analyze` | Deep-analyze source code or requirements docs to generate initial memory files |
+| **Analyze** | `/memory:analyze` | Analyze source code, documents, or conversational knowledge to generate memory files |
 | **Building** | `/memory:building` | Execute an approved plan to build memory files with two-stage review |
-| **Extract** | `/memory:extract` | Extract knowledge from any document (SRS, PRD, API specs) into memory files |
-| **Interview** | `/memory:interview` | Capture tribal knowledge through structured Q&A with team members |
 | **Check for Updates** | `/check-for-updates` | Check for new Harness Engineering releases and apply updates |
 
 ### Recommended Workflow
@@ -68,10 +66,8 @@ The Memory Toolkit is a set of AI skills that automate the creation and maintena
 ![Recommended Workflow](guideline/images/workflow.png)
 
 1. **Scan** first to understand the project state and get recommendations
-2. **Analyze** the project interactively to produce a spec and plan
+2. **Analyze** the project interactively — choose source, document, or interview mode
 3. **Build** the memory files from the approved plan
-4. **Extract** from additional documents as they arrive
-5. **Interview** team members to capture knowledge that isn't written down
 
 See the [Skills Guide](guideline/skills-guide.md) for detailed usage instructions and examples.
 
@@ -102,8 +98,6 @@ harness-engineering/
 │       ├── memory-scan.md
 │       ├── memory-analyze.md
 │       ├── memory-building.md
-│       ├── memory-extract.md
-│       ├── memory-interview.md
 │       ├── check-for-updates.md
 │       └── memory-building-knowledge/
 │           ├── csharp.md
