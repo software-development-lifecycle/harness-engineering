@@ -78,8 +78,6 @@ if [[ "$DRY_RUN" == true ]]; then
   echo "  .claude/commands/memory-analyze.md"
   echo "  .claude/commands/memory-building.md"
   echo "  .claude/commands/memory-building-knowledge/"
-  echo "  .claude/commands/memory-extract.md"
-  echo "  .claude/commands/memory-interview.md"
   exit 0
 fi
 
